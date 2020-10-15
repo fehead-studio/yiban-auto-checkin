@@ -26,9 +26,9 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/yiban_autocheckin?serverTimeZone=UTC"
+                        connectionURL="jdbc:mysql://47.93.200.138:3306/yiban_auto_checkin?serverTimeZone=UTC"
                         userId="root"
-                        password="root">
+                        password="JINXUyang123">
             <!--解决mysql驱动升级到8.0后不生成指定数据库代码的问题-->
             <property name="nullCatalogMeansCurrent" value="true" />
         </jdbcConnection>
@@ -40,5 +40,8 @@
         <javaClientGenerator type="XMLMAPPER" targetPackage="ink.verge.yiban_auto_checkin.mbg.mapper"
                              targetProject="src\main\java"/>
 
+        <table tableName="user">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
     </context>
 </generatorConfiguration>

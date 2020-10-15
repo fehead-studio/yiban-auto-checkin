@@ -46,19 +46,23 @@
             </p>
             <hr>
             <form id="form">
-                <div class="form-group ">
+
+               <!-- <div class="form-group">
+                    <label for="uid">UID</label>
+                    <input type="text" name="uid" class="form-control" id="uid" readonly="readonly">
+                </div>-->
+
+                <div class="form-group">
                     <label for="account">手机号</label>
-                    <input type="text" name="account" class="form-control" id="account" placeholder="填写易班手机号">
+                    <input type="text" name="account" class="form-control" id="account" placeholder="易班登录手机号">
                 </div>
                 <div class="form-group">
-                    <label for="password">密码</label>
-                    <input type="password" name="password" class="form-control" id="password" placeholder="易班账号密码">
+                    <label for="address">地址</label>
+                    <input type="text" name="address" class="form-control" id="address" placeholder="易班账号密码">
                 </div>
-                <div class="form-group">
-                    <label for="email">邮箱(可不填)</label>
-                    <input type="email" name="mail" class="form-control" id="email" placeholder="用于接收签到状态的邮箱">
-                </div>
+
                 <button type="button" class="btn" id="submit">提交</button>
+                <button class="btn" type="button" id="get">查询</button>
             </form>
         </div>
     </div>
@@ -72,20 +76,38 @@
 
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
-<script>
-    $("#submit").click(function () {
+<script type="text/javascript">
+    let uid;
+    $("#get").click(function (){
         $.ajax({
-            url:"user/insert",
-            type:"post",
+            url:"user/selectByAccount",
+            method:"get",
+            dataType:"json",
+            data: {"account":$("#account").val()},
+            success:function (res){
+                let user = res.data;
+                $("#account").val(user.account);
+                $("#address").val(user.address);
+                uid = user.uid;
+            },
+            error:function (e){
+              alert("我裂开了");
+            }
+        })
+    })
+
+    $("#submit").click(function (){
+        $.ajax({
+            url: "user/"+uid,
+            method: "put",
             dataType: "json",
             data: $("#form").serializeArray(),
-            success:function (data) {
-                if(data.code === 200){
-                    $("#alert").html('<div class="alert alert-success" role="alert">'+data.message+'</div>');
+            success:function (res){
+                if(res.code === 200){
+                    $("#alert").html('<div class="alert alert-success" role="alert">'+res.message+'</div>');
                 } else {
-                    $("#alert").html('<div class="alert alert-danger" role="alert">'+data.code+","+data.message+'</div>');
+                    $("#alert").html('<div class="alert alert-danger" role="alert">'+res.code+","+res.message+'</div>');
                 }
-                console.log(data);
             }
         })
     })

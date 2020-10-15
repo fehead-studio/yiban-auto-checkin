@@ -1,75 +1,71 @@
 package ink.verge.yiban_auto_checkin.service;
 
-import ink.verge.yiban_auto_checkin.common.CommonResult;
-import ink.verge.yiban_auto_checkin.mbg.mapper.UserMapper;
 import ink.verge.yiban_auto_checkin.mbg.model.User;
-import ink.verge.yiban_auto_checkin.mbg.model.UserExample;
-import ink.verge.yiban_auto_checkin.utils.YibanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class UserService {
-    private UserMapper userMapper;
-    @Autowired
-    public UserService( UserMapper userMapper) {
-        this.userMapper = userMapper;
-    }
+/**
+ * @Author Verge
+ * @Date 2020/9/26 20:54
+ */
 
-    //获取未完成晨间签到的人
-    public CommonResult<List<User>> getMorUndoneUser(){
-        UserExample userExample = new UserExample();
-        userExample.createCriteria()
-                .andAccountIsNotNull()
-                .andPasswordIsNotNull()
-                .andMorstatusEqualTo(false);
-        try {
-            List<User> list = userMapper.selectByExample(userExample);
-            return CommonResult.success(list,"成功获取未完成晨间签到的用户");
-        } catch (Exception e){
-            return  CommonResult.failed("获取未完成晨间签到的用户时失败");
-        }
-    }
+public interface UserService {
+    /**
+     * 新增用户
+     * @return
+     */
+    int insertUser(User user);
 
-    //获取未完成午间签到的人
-    public CommonResult<List<User>> getNoonUndoneUser(){
-        UserExample userExample = new UserExample();
-        userExample.createCriteria()
-                .andAccountIsNotNull()
-                .andPasswordIsNotNull()
-                .andNoonstatusEqualTo(false);
-        try {
-            List<User> list = userMapper.selectByExample(userExample);
-            return CommonResult.success(list,"成功获取未完成午间签到的用户");
-        } catch (Exception e){
-            return  CommonResult.failed("获取未完成午间签到的用户时失败");
-        }
-    }
+    /**
+     * 删除用户
+     * @return
+     */
+    int deleteUser(int uid);
 
-    //增加新用户
-    public CommonResult<String> addUser(User user){
-        if (userMapper.insertSelective(user) == 1){
-            return CommonResult.success("添加成功");
-        } else {
-            return CommonResult.failed("添加失败");
-        }
-    }
+    /**
+     * 修改用户信息
+     * @return
+     */
+    int changeUserInfo(User user);
 
-    //设置cookie
-    public CommonResult<String> setCookie(User user){
-        CommonResult<String> ck = YibanUtils.getCookieOneStep(user);
-        if (ck.getCode() == 200){
-            String cookie = ck.getData();
-            user.setCookie(cookie);
-            if(userMapper.updateByPrimaryKey(user) == 1){
-                return CommonResult.success("成功");
-            } else {
-                return CommonResult.failed("失败");
-            }
-        } else {
-            return CommonResult.failed("失败");
-        }
-    }
+    /**
+     * 获取未完成午间签到的人
+     * @return 未完成午间签到的列表
+     */
+    List<User> getNoonUndoneUser();
+
+    /**
+     * 获取未完成晨间签到的人
+     * @return 未完成晨间签到的列表
+     */
+    List<User> getMorUndoneUser();
+
+    /**
+     * 重置签到状态为false
+     * @return
+     */
+    int resetCheckinStatus();
+
+    /**
+     * 设置签到状态为true
+     * @param user
+     * @param type
+     * @return
+     */
+    int setCheckinStatus(User user, int type);
+
+    /**
+     * 获取用户ByID
+     * @param uid
+     * @return
+     */
+    User getUserByUID(int uid);
+
+    /**
+     * 通过手机号获取用户
+     * @param account
+     * @return
+     */
+    User getUserByAccount(String account);
+
 }

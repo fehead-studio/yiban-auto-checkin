@@ -10,9 +10,6 @@
     <result column="morstatus" jdbcType="BIT" property="morstatus" />
     <result column="noonstatus" jdbcType="BIT" property="noonstatus" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="ink.verge.yiban_auto_checkin.mbg.model.User">
-    <result column="cookie" jdbcType="LONGVARCHAR" property="cookie" />
-  </resultMap>
   <sql id="Example_Where_Clause">
     <where>
       <foreach collection="oredCriteria" item="criteria" separator="or">
@@ -74,25 +71,6 @@
   <sql id="Base_Column_List">
     uid, account, password, address, mail, morstatus, noonstatus
   </sql>
-  <sql id="Blob_Column_List">
-    cookie
-  </sql>
-  <select id="selectByExampleWithBLOBs" parameterType="ink.verge.yiban_auto_checkin.mbg.model.UserExample" resultMap="ResultMapWithBLOBs">
-    select
-    <if test="distinct">
-      distinct
-    </if>
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from user
-    <if test="_parameter != null">
-      <include refid="Example_Where_Clause" />
-    </if>
-    <if test="orderByClause != null">
-      order by ${orderByClause}
-    </if>
-  </select>
   <select id="selectByExample" parameterType="ink.verge.yiban_auto_checkin.mbg.model.UserExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
@@ -107,11 +85,9 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
     from user
     where uid = #{uid,jdbcType=INTEGER}
   </select>
@@ -128,10 +104,10 @@
   <insert id="insert" parameterType="ink.verge.yiban_auto_checkin.mbg.model.User">
     insert into user (uid, account, password, 
       address, mail, morstatus, 
-      noonstatus, cookie)
+      noonstatus)
     values (#{uid,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{address,jdbcType=VARCHAR}, #{mail,jdbcType=VARCHAR}, #{morstatus,jdbcType=BIT}, 
-      #{noonstatus,jdbcType=BIT}, #{cookie,jdbcType=LONGVARCHAR})
+      #{noonstatus,jdbcType=BIT})
   </insert>
   <insert id="insertSelective" parameterType="ink.verge.yiban_auto_checkin.mbg.model.User">
     insert into user
@@ -157,9 +133,6 @@
       <if test="noonstatus != null">
         noonstatus,
       </if>
-      <if test="cookie != null">
-        cookie,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="uid != null">
@@ -182,9 +155,6 @@
       </if>
       <if test="noonstatus != null">
         #{noonstatus,jdbcType=BIT},
-      </if>
-      <if test="cookie != null">
-        #{cookie,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -218,24 +188,7 @@
       <if test="record.noonstatus != null">
         noonstatus = #{record.noonstatus,jdbcType=BIT},
       </if>
-      <if test="record.cookie != null">
-        cookie = #{record.cookie,jdbcType=LONGVARCHAR},
-      </if>
     </set>
-    <if test="_parameter != null">
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByExampleWithBLOBs" parameterType="map">
-    update user
-    set uid = #{record.uid,jdbcType=INTEGER},
-      account = #{record.account,jdbcType=VARCHAR},
-      password = #{record.password,jdbcType=VARCHAR},
-      address = #{record.address,jdbcType=VARCHAR},
-      mail = #{record.mail,jdbcType=VARCHAR},
-      morstatus = #{record.morstatus,jdbcType=BIT},
-      noonstatus = #{record.noonstatus,jdbcType=BIT},
-      cookie = #{record.cookie,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -274,21 +227,7 @@
       <if test="noonstatus != null">
         noonstatus = #{noonstatus,jdbcType=BIT},
       </if>
-      <if test="cookie != null">
-        cookie = #{cookie,jdbcType=LONGVARCHAR},
-      </if>
     </set>
-    where uid = #{uid,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="ink.verge.yiban_auto_checkin.mbg.model.User">
-    update user
-    set account = #{account,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR},
-      address = #{address,jdbcType=VARCHAR},
-      mail = #{mail,jdbcType=VARCHAR},
-      morstatus = #{morstatus,jdbcType=BIT},
-      noonstatus = #{noonstatus,jdbcType=BIT},
-      cookie = #{cookie,jdbcType=LONGVARCHAR}
     where uid = #{uid,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="ink.verge.yiban_auto_checkin.mbg.model.User">

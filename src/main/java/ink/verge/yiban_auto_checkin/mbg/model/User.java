@@ -1,9 +1,7 @@
 package ink.verge.yiban_auto_checkin.mbg.model;
 
-import org.springframework.stereotype.Component;
-
 import java.io.Serializable;
-@Component
+
 public class User implements Serializable {
     private Integer uid;
 
@@ -18,8 +16,6 @@ public class User implements Serializable {
     private Boolean morstatus;
 
     private Boolean noonstatus;
-
-    private String cookie;
 
     private static final long serialVersionUID = 1L;
 
@@ -79,14 +75,6 @@ public class User implements Serializable {
         this.noonstatus = noonstatus;
     }
 
-    public String getCookie() {
-        return cookie;
-    }
-
-    public void setCookie(String cookie) {
-        this.cookie = cookie;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -100,7 +88,6 @@ public class User implements Serializable {
         sb.append(", mail=").append(mail);
         sb.append(", morstatus=").append(morstatus);
         sb.append(", noonstatus=").append(noonstatus);
-        sb.append(", cookie=").append(cookie);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();
