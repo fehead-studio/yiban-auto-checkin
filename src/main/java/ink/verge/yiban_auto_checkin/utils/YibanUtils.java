@@ -151,7 +151,7 @@ public class YibanUtils {
     }
 
 
-    public boolean checkin(User user,int type){
+    public boolean checkin(User user,int type) {
         log.info("PARAM: user " + user);
         log.info("PARAM: type " + type);
 
@@ -176,8 +176,12 @@ public class YibanUtils {
         }finally {
             String mail = user.getMail();
             if (mail != null) {
-                if (flag) MailUtil.send(mail,"今日打卡成功", message,false);
-                else MailUtil.send(mail,"！！！今日打卡失败！！！", message,false);
+                try {
+                    if (flag) MailUtil.send(mail,"今日打卡成功", message,false);
+                    else MailUtil.send(mail,"！！！今日打卡失败！！！", message,false);
+                } catch (Exception e){
+                    log.info("邮件发送失败");
+                }
             }
 
         }
