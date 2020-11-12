@@ -11,11 +11,8 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private final UserMapper userMapper;
     @Autowired
-    public UserServiceImpl(UserMapper userMapper) {
-        this.userMapper = userMapper;
-    }
+    private UserMapper userMapper;
 
     @Override
     public List<User> getMorUndoneUser(){

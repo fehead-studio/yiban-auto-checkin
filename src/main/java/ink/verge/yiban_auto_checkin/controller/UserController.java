@@ -1,5 +1,6 @@
 package ink.verge.yiban_auto_checkin.controller;
 
+import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import ink.verge.yiban_auto_checkin.common.CommonResult;
 import ink.verge.yiban_auto_checkin.mbg.model.User;
 import ink.verge.yiban_auto_checkin.run.RunCheckin;
@@ -12,24 +13,24 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequestMapping("/user")
 public class UserController {
-    private UserServiceImpl userService;
-    private RunCheckin runCheckin;
-
     @Autowired
-    public UserController(UserServiceImpl userService, RunCheckin runCheckin) {
-        this.userService = userService;
-        this.runCheckin = runCheckin;
-    }
+    private UserServiceImpl userService;
+    @Autowired
+    private RunCheckin runCheckin;
+    @Autowired
+    private SymmetricCrypto aes;
 
     @PostMapping(path = "/insert")
     public CommonResult addUser(@RequestParam String account,String password,String mail){
         log.info("PARAM: account " + account);
-        log.info("PARAM: password " + password);
+        log.debug("PARAM: password " + password);
         log.info("PARAM: account " + mail);
+
+        String enPassword = aes.encryptBase64(password);
 
         User user = new User();
         user.setAccount(account);
-        user.setPassword(password);
+        user.setPassword(enPassword);
         user.setMail(mail);
 
         if (user.getAccount().length() < 11 || user.getPassword().length() < 6){

@@ -1,5 +1,6 @@
 package ink.verge.yiban_auto_checkin.utils;
 
+import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
@@ -9,6 +10,7 @@ import cn.hutool.json.JSONUtil;
 import ink.verge.yiban_auto_checkin.common.CommonResult;
 import ink.verge.yiban_auto_checkin.mbg.model.User;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -16,6 +18,9 @@ import java.util.*;
 @Component
 @Slf4j
 public class YibanUtils {
+
+    @Autowired
+    private SymmetricCrypto aes;
 
     private static Map<String,Object> morMap = new LinkedHashMap<>();
     private static Map<String,Object> noonMap = new LinkedHashMap<>();
@@ -55,26 +60,32 @@ public class YibanUtils {
 
 
 
-    public static String getAccessToken(String username, String password){
+    public String getAccessToken(String username, String password){
         log.info("-----------------------------------------------------------------------");
-        log.info("PARAM: username "+ username);
-        log.info("PARAM: password "+ password);
+        log.debug("PARAM: username "+ username);
+        log.debug("PARAM: password "+ password);
+
+        String dePassword = aes.decryptStr(password);
 
         Map<String,Object> map = new HashMap<>();
-        map.put("account",username);
-        map.put("passwd",password);
+        map.put("mobile",username);
+        map.put("password",dePassword);
+        map.put("imei",IMEIUtils.getIMEI());
 
 
         try {
-            String jsonStr = HttpUtil.get("https://mobile.yiban.cn/api/v2/passport/login?v=4.7.4&ct=1&identify=0",map);
+            String jsonStr = HttpUtil.get("https://mobile.yiban.cn/api/v3/passport/login",map);
             JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
-            if (jsonObject.get("response").equals("100")){
-                JSONObject res = ((JSONObject) jsonObject.get("data"));
-                String accessToken = res.getStr("access_token");
-                String name = ((JSONObject) res.get("user")).getStr("name");
+            log.debug(jsonObject.toString());
+            if (jsonObject.get("response").equals(100)){
+                JSONObject user = (JSONObject) ((JSONObject) jsonObject.get("data")).get("user");
+
+
+                String accessToken = user.getStr("access_token");
+                String name = user.getStr("nick");
 
                 log.info("姓名: "+ name);
-                log.info("SUCCESS: 成功获取access_token " + accessToken);
+                log.debug("SUCCESS: 成功获取access_token " + accessToken);
                 return accessToken;
             } else {
                 log.error("易班返回参数不为100，登录失败");
@@ -86,8 +97,8 @@ public class YibanUtils {
         }
     }
 
-    public static String getCookie(String accesstoken){
-        log.info("PARAM: access_token " + accesstoken);
+    public String getCookie(String accesstoken){
+        log.debug("PARAM: access_token " + accesstoken);
 
         try {
             if (accesstoken == null) throw new Exception();
@@ -96,7 +107,7 @@ public class YibanUtils {
                     .setFollowRedirects(true)
                     .execute();
             String res = response.header("Set-Cookie");
-            log.info("SUCCESS: Cookie " + res);
+            log.debug("SUCCESS: Cookie " + res);
             return res;
         } catch (Exception e) {
             log.info("Exception: 未获取到SESSID");
@@ -106,7 +117,7 @@ public class YibanUtils {
     }
 
     public CommonResult submit(String cookie, int type){
-        log.info("PARAM: cookie " + cookie);
+        log.debug("PARAM: cookie " + cookie);
         log.info("PARAM: type " + type);
 
         double temp = (new Random().nextInt(4)+4)/10.0+36;
@@ -152,7 +163,7 @@ public class YibanUtils {
 
 
     public boolean checkin(User user,int type) {
-        log.info("PARAM: user " + user);
+        log.debug("PARAM: user " + user);
         log.info("PARAM: type " + type);
 
         boolean flag = false;

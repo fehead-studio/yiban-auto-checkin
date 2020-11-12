@@ -57,4 +57,4 @@ build/
 hs_err_pid*
 
 mail.setting
-application.properties
+application-enc.properties
