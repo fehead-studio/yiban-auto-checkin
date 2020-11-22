@@ -33,7 +33,7 @@ public class RunCheckin {
         for (User user : morUndoneUser) {
             if (yibanUtils.checkin(user,1)) userService.setCheckinStatus(user,1);
             try {
-                Thread.sleep(30000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -52,7 +52,7 @@ public class RunCheckin {
         for (User user : noonUndoneUserList) {
             if (yibanUtils.checkin(user,2)) userService.setCheckinStatus(user,2);
             try {
-                Thread.sleep(30000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
