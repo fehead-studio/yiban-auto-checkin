@@ -1,9 +1,7 @@
 package ink.verge.yiban_auto_checkin.utils;
 
-import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import cn.hutool.extra.mail.MailUtil;
-import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
@@ -14,7 +12,6 @@ import com.fehead.lang.error.EmBusinessError;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import ink.verge.yiban_auto_checkin.common.CommonResult;
 import ink.verge.yiban_auto_checkin.mbg.model.User;
 import lombok.extern.slf4j.Slf4j;
