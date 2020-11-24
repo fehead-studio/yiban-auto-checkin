@@ -1,12 +1,20 @@
 package ink.verge.yiban_auto_checkin.utils;
 
+import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import cn.hutool.extra.mail.MailUtil;
+import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.fehead.lang.error.BusinessException;
+import com.fehead.lang.error.EmBusinessError;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import ink.verge.yiban_auto_checkin.common.CommonResult;
 import ink.verge.yiban_auto_checkin.mbg.model.User;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +32,8 @@ public class YibanUtils {
 
     private static Map<String,Object> morMap = new LinkedHashMap<>();
     private static Map<String,Object> noonMap = new LinkedHashMap<>();
-    private static String morUrl = "http://yiban.sust.edu.cn/v4/public/index.php/Index/formflow/add.html?desgin_id=24&list_id=12";
-    private static String noonUrl = "http://yiban.sust.edu.cn/v4/public/index.php/Index/formflow/add.html?desgin_id=25&list_id=12";
+    private static final String morUrl = "http://yiban.sust.edu.cn/v4/public/index.php/Index/formflow/add.html?desgin_id=24&list_id=12";
+    private static final String noonUrl = "http://yiban.sust.edu.cn/v4/public/index.php/Index/formflow/add.html?desgin_id=25&list_id=12";
     static {
         morMap.put("24[0][0][name]","form[24][field_1588749561_2922][]");
         morMap.put("24[0][0][value]","36.5");
@@ -60,12 +68,14 @@ public class YibanUtils {
 
 
 
-    public String getAccessToken(String username, String password){
+    public String getAccessToken(String username, String dePassword) throws BusinessException {
         log.info("-----------------------------------------------------------------------");
         log.debug("PARAM: username "+ username);
-        log.debug("PARAM: password "+ password);
+        log.debug("PARAM: password "+ dePassword);
 
-        String dePassword = aes.decryptStr(password);
+        String accessToken = null;
+
+        //String dePassword = aes.decryptStr(password);
 
         Map<String,Object> map = new HashMap<>();
         map.put("mobile",username);
@@ -73,28 +83,23 @@ public class YibanUtils {
         map.put("imei",IMEIUtils.getIMEI());
 
 
-        try {
-            String jsonStr = HttpUtil.get("https://mobile.yiban.cn/api/v3/passport/login",map);
-            JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
-            log.debug(jsonObject.toString());
-            if (jsonObject.get("response").equals(100)){
-                JSONObject user = (JSONObject) ((JSONObject) jsonObject.get("data")).get("user");
+        String jsonStr = HttpUtil.get("https://mobile.yiban.cn/api/v3/passport/login",map);
 
+        JsonParser parser = new JsonParser();
+        JsonElement element = parser.parse(jsonStr);
+        JsonObject root = element.getAsJsonObject();
+        String code = root.getAsJsonPrimitive("response").getAsString();
 
-                String accessToken = user.getStr("access_token");
-                String name = user.getStr("nick");
-
-                log.info("姓名: "+ name);
-                log.debug("SUCCESS: 成功获取access_token " + accessToken);
-                return accessToken;
-            } else {
-                log.error("易班返回参数不为100，登录失败");
-                throw new Exception();
-            }
-        } catch (Exception e){
-            log.error("易班返回的数据可能有变化,未获取到易班返回的状态码");
-            return null;
+        // 成功
+        if (code.equals("100")) {
+            accessToken = root.getAsJsonObject("data").getAsJsonObject("user")
+                    .getAsJsonPrimitive("access_token").getAsString();
+        }else {
+            String errMsg = root.getAsJsonPrimitive("message").getAsString();
+            throw new BusinessException(EmBusinessError.USER_LOGIN_FAIL,errMsg);
         }
+
+        return accessToken;
     }
 
     public String getCookie(String accesstoken){
