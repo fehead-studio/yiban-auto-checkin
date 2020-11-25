@@ -65,14 +65,14 @@ public class YibanUtils {
 
 
 
-    public String getAccessToken(String username, String dePassword) throws BusinessException {
+    public String getAccessToken(String username, String password) throws BusinessException {
         log.info("-----------------------------------------------------------------------");
         log.debug("PARAM: username "+ username);
-        log.debug("PARAM: password "+ dePassword);
+        log.debug("PARAM: password "+ password);
 
         String accessToken = null;
 
-        //String dePassword = aes.decryptStr(password);
+        String dePassword = aes.decryptStr(password);
 
         Map<String,Object> map = new HashMap<>();
         map.put("mobile",username);
@@ -146,10 +146,13 @@ public class YibanUtils {
                     .cookie(cookie)
                     .execute();
 
-            JSONObject returnInfo = JSONUtil.parseObj(response.body());
+            JsonParser parser =  new JsonParser();
+            JsonElement element = parser.parse(response.body());
+            JsonObject root = element.getAsJsonObject();
+            String code = root.getAsJsonPrimitive("code").getAsString();
+            String msg = root.getAsJsonPrimitive("msg").getAsString();
 
-            String msg = (String) returnInfo.get("msg");
-            if (returnInfo.get("code").equals("1") || msg.contains("请勿多次提交") || msg.contains("SU")){
+            if (code.equals("1") || msg.contains("请勿多次提交") || msg.contains("SU")){
                 log.info("SUCCESS: "+msg);
                 return CommonResult.success(msg);
             } else {
