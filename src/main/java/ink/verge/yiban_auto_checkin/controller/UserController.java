@@ -1,7 +1,6 @@
 package ink.verge.yiban_auto_checkin.controller;
 
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
-import com.fehead.lang.controller.BaseController;
 import ink.verge.yiban_auto_checkin.common.CommonResult;
 import ink.verge.yiban_auto_checkin.mbg.model.User;
 import ink.verge.yiban_auto_checkin.run.RunCheckin;
