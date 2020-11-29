@@ -68,4 +68,11 @@ public interface UserService {
      */
     User getUserByAccount(String account);
 
+    /**
+     * 通过openid获取用户
+     * @param openId
+     * @return
+     */
+    User getUserByOpenId(String openId);
+
 }
