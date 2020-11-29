@@ -8,6 +8,7 @@ import com.thoughtworks.xstream.XStream;
 import ink.verge.yiban_auto_checkin.controller.model.WxUserMessageModel;
 import ink.verge.yiban_auto_checkin.mbg.model.User;
 import ink.verge.yiban_auto_checkin.service.UserService;
+import ink.verge.yiban_auto_checkin.service.WxService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -44,9 +45,8 @@ public class WxController extends BaseController {
     @Value("${fehead.wx.serve.token}")
     String token;
 
-    final String yibanCheckUrl = "易班自动打卡：\nhttp://47.93.200.138:8099";
-
     final UserService userService;
+    private final WxService wxService;
 
     /**
      * 验证消息来自微信
@@ -106,18 +106,11 @@ public class WxController extends BaseController {
             return "success";
         }
         WxUserMessageModel responseXmlData = new WxUserMessageModel();
-        responseXmlData.setToUserName(wxUserMessageModel.getFromUserName());
-        responseXmlData.setFromUserName(wxUserMessageModel.getToUserName());
-        responseXmlData.setCreateTime(new Date().getTime());
-        responseXmlData.setMsgType("text");
-        if (StringUtils.equals(wxUserMessageModel.getContent(), "打卡")) {
-            responseXmlData.setContent(yibanCheckUrl);
-        } else if (StringUtils.equals(wxUserMessageModel.getContent(), "打卡状态")) {
-            responseXmlData.setContent(checkCheckState(wxUserMessageModel.getFromUserName()));
-        } else if (StringUtils.startsWith(wxUserMessageModel.getContent(), "手机号")) {
-            responseXmlData.setContent(registerUser(wxUserMessageModel.getFromUserName(), wxUserMessageModel.getContent()));
-        } else {
-            responseXmlData.setContent(wxUserMessageModel.getContent());
+        String msgType = wxUserMessageModel.getMsgType();
+        if(StringUtils.equals(msgType,"text")){
+            responseXmlData = wxService.dealWhenText(wxUserMessageModel);
+        }else if(StringUtils.equals(msgType,"event")){
+            responseXmlData = wxService.dealWhenEvent(wxUserMessageModel);
         }
         XStream xstream = new XStream();
         xstream.processAnnotations(WxUserMessageModel.class);
@@ -126,49 +119,6 @@ public class WxController extends BaseController {
 
     }
 
-    private String registerUser(String fromUserName, String content) {
-        String tel = StringUtils.substringAfter(content, "手机号");
-        tel = tel.trim();
-        User userByAccount = userService.getUserByAccount(tel);
-        if (userByAccount == null) {
-            return "绑定失败，请确认手机号是否正确或者格式问题，例：手机号15389159576";
-        }
-        userByAccount.setOpenid(fromUserName);
-        userService.changeUserInfo(userByAccount);
-        return "绑定成功";
-    }
-
-    private String checkCheckState(String fromUserName) {
-        User userByOpenId = userService.getUserByOpenId(fromUserName);
-        if (userByOpenId == null) {
-            return "未绑定账号，请发送指定数据绑定账户，例: \n手机号15389159576";
-        }
-        Boolean morstatus = userByOpenId.getMorstatus();
-        Boolean noonstatus = userByOpenId.getNoonstatus();
-        String content = "今日打卡状态：\n";
-        Calendar instance = Calendar.getInstance();
-        int hour = instance.get(Calendar.HOUR_OF_DAY);
-        if (hour > 6) {
-            content += "晨检：未开始";
-        } else {
-            if (morstatus) {
-                content += "晨检：成功";
-            } else {
-                content += "晨检：失败";
-            }
-        }
-        if (hour > 12) {
-            content += "午检：未开始";
-        } else {
-            if (noonstatus) {
-                content += "晨检：成功";
-            } else {
-                content += "晨检：失败";
-            }
-        }
-        return content;
-
-    }
 
     /**
      * 解析xml数据
@@ -192,6 +142,14 @@ public class WxController extends BaseController {
     @GetMapping("/user/message/test")
     public WxUserMessageReturnType testNet() {
         return WxUserMessageReturnType.create("测试成功");
+    }
+    /**
+     * 用户登录接口：https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxbd5d8bebb07b1e84&redirect_uri=http%3A%2F%2Frt3mb8.natappfree.cc%2Fwx%2Fuser%2Flogin&response_type=code&scope=snsapi_base#wechat_redirect
+     */
+    @GetMapping("/user/login")
+    public String userLogin(String code){
+        logger.info(code);
+        return "登录成功";
     }
 
 }

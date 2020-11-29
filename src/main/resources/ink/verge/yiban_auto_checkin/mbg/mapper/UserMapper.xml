@@ -9,6 +9,7 @@
     <result column="mail" jdbcType="VARCHAR" property="mail" />
     <result column="morstatus" jdbcType="BIT" property="morstatus" />
     <result column="noonstatus" jdbcType="BIT" property="noonstatus" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -69,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    uid, account, password, address, mail, morstatus, noonstatus
+    uid, account, password, address, mail, morstatus, noonstatus, openid
   </sql>
   <select id="selectByExample" parameterType="ink.verge.yiban_auto_checkin.mbg.model.UserExample" resultMap="BaseResultMap">
     select
@@ -104,10 +105,10 @@
   <insert id="insert" parameterType="ink.verge.yiban_auto_checkin.mbg.model.User">
     insert into user (uid, account, password, 
       address, mail, morstatus, 
-      noonstatus)
+      noonstatus, openid)
     values (#{uid,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{address,jdbcType=VARCHAR}, #{mail,jdbcType=VARCHAR}, #{morstatus,jdbcType=BIT}, 
-      #{noonstatus,jdbcType=BIT})
+      #{noonstatus,jdbcType=BIT}, #{openid,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="ink.verge.yiban_auto_checkin.mbg.model.User">
     insert into user
@@ -133,6 +134,9 @@
       <if test="noonstatus != null">
         noonstatus,
       </if>
+      <if test="openid != null">
+        openid,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="uid != null">
@@ -155,6 +159,9 @@
       </if>
       <if test="noonstatus != null">
         #{noonstatus,jdbcType=BIT},
+      </if>
+      <if test="openid != null">
+        #{openid,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -188,6 +195,9 @@
       <if test="record.noonstatus != null">
         noonstatus = #{record.noonstatus,jdbcType=BIT},
       </if>
+      <if test="record.openid != null">
+        openid = #{record.openid,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -201,7 +211,8 @@
       address = #{record.address,jdbcType=VARCHAR},
       mail = #{record.mail,jdbcType=VARCHAR},
       morstatus = #{record.morstatus,jdbcType=BIT},
-      noonstatus = #{record.noonstatus,jdbcType=BIT}
+      noonstatus = #{record.noonstatus,jdbcType=BIT},
+      openid = #{record.openid,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -227,6 +238,9 @@
       <if test="noonstatus != null">
         noonstatus = #{noonstatus,jdbcType=BIT},
       </if>
+      <if test="openid != null">
+        openid = #{openid,jdbcType=VARCHAR},
+      </if>
     </set>
     where uid = #{uid,jdbcType=INTEGER}
   </update>
@@ -237,7 +251,8 @@
       address = #{address,jdbcType=VARCHAR},
       mail = #{mail,jdbcType=VARCHAR},
       morstatus = #{morstatus,jdbcType=BIT},
-      noonstatus = #{noonstatus,jdbcType=BIT}
+      noonstatus = #{noonstatus,jdbcType=BIT},
+      openid = #{openid,jdbcType=VARCHAR}
     where uid = #{uid,jdbcType=INTEGER}
   </update>
 </mapper>

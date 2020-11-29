@@ -47,4 +47,7 @@ public class WxUserMessageModel {
 
     @XStreamAlias("EventKey")
     private String eventkey;
+
+    @XStreamAlias("MenuId")
+    private String menuId;
 }
