@@ -88,4 +88,12 @@ public class UserServiceImpl implements UserService {
         List<User> list = userMapper.selectByExample(userExample);
         return list.get(0);
     }
+
+    @Override
+    public User getUserByOpenId(String openId) {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andAccountEqualTo(openId);
+        List<User> list = userMapper.selectByExample(userExample);
+        return list.get(0);
+    }
 }

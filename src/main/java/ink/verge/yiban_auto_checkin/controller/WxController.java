@@ -6,6 +6,8 @@ import com.fehead.lang.error.EmBusinessError;
 import com.fehead.lang.response.WxUserMessageReturnType;
 import com.thoughtworks.xstream.XStream;
 import ink.verge.yiban_auto_checkin.controller.model.WxUserMessageModel;
+import ink.verge.yiban_auto_checkin.mbg.model.User;
+import ink.verge.yiban_auto_checkin.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -23,10 +25,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Description: 接受微信发的消息
@@ -45,6 +44,11 @@ public class WxController extends BaseController {
     String aesKey;
     @Value("${fehead.wx.serve.token}")
     String token;
+
+    final String yibanCheckUrl = "易班自动打卡：\nhttp://47.93.200.138:8099";
+
+    final UserService userService;
+
     @GetMapping("/user/message")
     public String replyWxServe(ServletRequest request, ServletResponse response) throws BusinessException {
         String signature = request.getParameter("signature");
@@ -86,13 +90,63 @@ public class WxController extends BaseController {
         responseXmlData.setFromUserName(wxUserMessageModel.getToUserName());
         responseXmlData.setCreateTime(new Date().getTime());
         responseXmlData.setMsgType("text");
-        responseXmlData.setContent(wxUserMessageModel.getContent());
-        System.out.println(responseXmlData);
+        if(StringUtils.equals(wxUserMessageModel.getContent(),"打卡")){
+            responseXmlData.setContent(yibanCheckUrl);
+        }else if(StringUtils.equals(wxUserMessageModel.getContent(),"打卡状态")){
+            responseXmlData.setContent(checkCheckState(wxUserMessageModel.getFromUserName()));
+        } else if(StringUtils.startsWith(wxUserMessageModel.getContent(),"手机号")){
+            responseXmlData.setContent(registerUser(wxUserMessageModel.getFromUserName(),wxUserMessageModel.getContent()));
+        }else{
+            responseXmlData.setContent(wxUserMessageModel.getContent());
+        }
         XStream xstream = new XStream();
         xstream.processAnnotations(WxUserMessageModel.class);
         xstream.setClassLoader(WxUserMessageModel.class.getClassLoader());
         return xstream.toXML(responseXmlData);  //XStream的方法，直接将对象转换成 xml数据
 
+    }
+
+    private String registerUser(String fromUserName, String content) {
+        String tel = StringUtils.substringAfter(content, "手机号");
+        tel = tel.trim();
+        User userByAccount = userService.getUserByAccount(tel);
+        if(userByAccount==null){
+            return "绑定失败，请确认手机号是否正确或者格式问题，例：手机号15389159576";
+        }
+        userByAccount.setOpenid(fromUserName);
+        userService.changeUserInfo(userByAccount);
+        return "绑定成功";
+    }
+
+    private String checkCheckState(String fromUserName) {
+        User userByOpenId = userService.getUserByOpenId(fromUserName);
+        if(userByOpenId==null){
+            return "未绑定账号，请发送指定数据绑定账户，例: \n手机号15389159576";
+        }
+        Boolean morstatus = userByOpenId.getMorstatus();
+        Boolean noonstatus = userByOpenId.getNoonstatus();
+        String content = "今日打卡状态：\n";
+        Calendar instance = Calendar.getInstance();
+        int hour = instance.get(Calendar.HOUR_OF_DAY);
+        if(hour>6){
+            content +="晨检：未开始";
+        }else{
+            if(morstatus){
+                content +="晨检：成功";
+            }else {
+                content +="晨检：失败";
+            }
+        }
+        if(hour>12){
+            content +="午检：未开始";
+        }else{
+            if(noonstatus){
+                content +="晨检：成功";
+            }else {
+                content +="晨检：失败";
+            }
+        }
+        return content;
 
     }
 
