@@ -4,7 +4,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Data;
 
 /**
- * @Description:
+ * @Description: 微信用户消息实体类
  * @Author: lmwis
  * @Date 2020-11-28 18:04
  * @Version 1.0
@@ -30,7 +30,6 @@ public class WxUserMessageModel {
     @XStreamAlias("MsgId")
     private String msgId;
 
-    //
     @XStreamAlias("Title")
     private String title;
 
@@ -48,4 +47,7 @@ public class WxUserMessageModel {
 
     @XStreamAlias("EventKey")
     private String eventkey;
+
+    @XStreamAlias("MenuId")
+    private String menuId;
 }

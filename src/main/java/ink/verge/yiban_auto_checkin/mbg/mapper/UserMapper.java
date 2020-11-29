@@ -4,9 +4,7 @@ import ink.verge.yiban_auto_checkin.mbg.model.User;
 import ink.verge.yiban_auto_checkin.mbg.model.UserExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface UserMapper {
     long countByExample(UserExample example);
 

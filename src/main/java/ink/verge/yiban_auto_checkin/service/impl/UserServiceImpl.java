@@ -4,15 +4,16 @@ import ink.verge.yiban_auto_checkin.mbg.mapper.UserMapper;
 import ink.verge.yiban_auto_checkin.mbg.model.User;
 import ink.verge.yiban_auto_checkin.mbg.model.UserExample;
 import ink.verge.yiban_auto_checkin.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
     @Override
     public List<User> getMorUndoneUser(){
@@ -92,8 +93,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByOpenId(String openId) {
         UserExample userExample = new UserExample();
-        userExample.createCriteria().andAccountEqualTo(openId);
+        userExample.createCriteria().andOpenidEqualTo(openId);
         List<User> list = userMapper.selectByExample(userExample);
+        if(list.size()==0){
+            return null;
+        }
         return list.get(0);
     }
 }
