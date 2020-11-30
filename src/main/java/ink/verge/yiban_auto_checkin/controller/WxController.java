@@ -6,11 +6,9 @@ import com.fehead.lang.error.EmBusinessError;
 import com.fehead.lang.response.WxUserMessageReturnType;
 import com.thoughtworks.xstream.XStream;
 import ink.verge.yiban_auto_checkin.controller.model.WxUserMessageModel;
-import ink.verge.yiban_auto_checkin.mbg.model.User;
 import ink.verge.yiban_auto_checkin.service.UserService;
 import ink.verge.yiban_auto_checkin.service.WxService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,7 +24,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @Description: 接受微信发的消息

@@ -58,3 +58,5 @@ hs_err_pid*
 
 mail.setting
 application-enc.properties
+src/main/resources/config/generatorConfig.xml
+*.sql
