@@ -75,4 +75,12 @@ public interface UserService {
      */
     User getUserByOpenId(String openId);
 
+    /**
+     * 校验用户名和密码是否正确
+     * @param account
+     * @param password
+     * @return
+     */
+    boolean verifyAccount(String username,String password);
+
 }

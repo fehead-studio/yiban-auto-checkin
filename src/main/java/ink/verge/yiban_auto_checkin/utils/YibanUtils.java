@@ -202,4 +202,25 @@ public class YibanUtils {
 
         }
     }
+
+    public boolean verifyAccount(String username, String password){
+        log.info("PARAM: username "+ username);
+        log.debug("PARAM: password "+ password);
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("mobile",username);
+        map.put("password",password);
+        map.put("imei",IMEIUtils.getIMEI());
+
+
+        String jsonStr = HttpUtil.get("https://mobile.yiban.cn/api/v3/passport/login",map);
+
+        JsonParser parser = new JsonParser();
+        JsonElement element = parser.parse(jsonStr);
+        JsonObject root = element.getAsJsonObject();
+        String code = root.getAsJsonPrimitive("response").getAsString();
+
+        // 成功
+        return code.equals("100");
+    }
 }

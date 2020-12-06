@@ -4,8 +4,8 @@ import ink.verge.yiban_auto_checkin.mbg.mapper.UserMapper;
 import ink.verge.yiban_auto_checkin.mbg.model.User;
 import ink.verge.yiban_auto_checkin.mbg.model.UserExample;
 import ink.verge.yiban_auto_checkin.service.UserService;
+import ink.verge.yiban_auto_checkin.utils.YibanUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
+    private final YibanUtils yibanUtils;
 
     @Override
     public List<User> getMorUndoneUser(){
@@ -99,5 +100,10 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         return list.get(0);
+    }
+
+    @Override
+    public boolean verifyAccount(String username, String password) {
+        return yibanUtils.verifyAccount(username,password);
     }
 }

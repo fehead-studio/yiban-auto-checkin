@@ -33,12 +33,14 @@ public class UserController {
         user.setPassword(enPassword);
         user.setMail(mail);
 
-        if (user.getAccount().length() < 11 || user.getPassword().length() < 6){
-            return CommonResult.failed("数据有误，请检查");
-        } else {
-            userService.insertUser(user);
+        if (userService.verifyAccount(account,password)){
+            if (userService.getUserByAccount(account) == null) userService.insertUser(user);
+            else return CommonResult.failed("用户已存在");
             log.info("SUCCESS: 插入成功");
-            return CommonResult.success("操作成功");
+            return CommonResult.success("添加成功，下次打卡自动打");
+        } else {
+            log.error("SUCCESS: 插入失败");
+            return CommonResult.failed("数据有误，请检查");
         }
     }
 
