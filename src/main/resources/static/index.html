@@ -35,17 +35,13 @@
 
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">易班自动打卡</div>
+        <div class="panel-heading">易班自动打卡(<span style="color: red" >使用前仔细阅读</span>)</div>
         <div class="panel-body">
             <p>
-                <h3 style="color: red" >12.6清理了一次无效数据，误伤的同学重新填一下</h3>
-                <h3 style="color: red" >使用前仔细阅读</h3>
                 晨午检都是自动的，填一次即可<br>
-                为了保险，建议自行检查是否签到成功<br>
+                不保证一定能签到成功，建议自行进入易班检查是否成功<br>
                 填写邮箱会有邮件提醒(没有邮件的话再垃圾邮件里找，还是没有的话那就没有)<br>
-                <span style="color: red" >提交点一次出现绿框"操作成功"就行，请务必一次把账号密码填对，如果很不幸填错的话，就不要再尝试了，直接联系我，或者有什么其他问题发邮件联系我981340404@qq.com</span><br>
-                <p>由于现在邮件提醒不太好用，所以以后有什么事就在这里说</p>
-            <span style="color: red;font-size: large">若我没签上你又不补签，造成的任何后果都不关我事啊，身体出现异常情况，请第一时间找辅导员</span><br>
+            <span style="color: red;font-size: 20px">若我没签上而恰巧你也没签，造成的任何后果都与我无关，使用则默认同意。若身体出现任何异常情况，请第一时间报告辅导员</span><br>
 
             </p>
             <hr>
@@ -65,6 +61,17 @@
                 <button type="button" class="btn" id="submit">提交</button>
             </form>
         </div>
+        <div class="panel-footer">
+            <p style="color: red">由于邮件不太好用，所以有什么事就在这里说</p>
+            <p>12.6清理了一次无效数据，误伤的同学重新填一下</p>
+            <p>
+                <strong>1. 关于签到逻辑<br></strong>
+                6-9点，12-15点每小时签到一次（若第一次签到成功则不会参加第二次签到，例如：6-9点之间共签到3次，若第一次6点签到失败，则7点再次尝试，继续失败继续尝试，最多尝试三次），大概十分钟可以完成所有人的签到。<br>
+                <strong>2. 关于邮件<br></strong>
+                邮件一直都在发，没有收到有两个原因一是发过去被当作垃圾邮件，二是由于发信频繁邮件被退回，如果有更好的通知方式可以联系我<br>
+            </p>
+            <span>提交点一次出现绿框"操作成功"即可,有什么问题可以发邮件联系我<a>981340404@qq.com</a></span><br>
+        </div>
     </div>
 </div>
 
@@ -81,7 +88,7 @@
                 if(data.code === 200){
                     $("#alert").html('<div class="alert alert-success" role="alert">'+data.message+'</div>');
                 } else {
-                    $("#alert").html('<div class="alert alert-danger" role="alert">'+data.code+","+data.message+'</div>');
+                    $("#alert").html('<div class="alert alert-danger" role="alert">'+data.message+'</div>');
                 }
                 console.log(data);
             }
