@@ -67,7 +67,7 @@ public class YibanUtils {
 
     public String getAccessToken(String username, String password) throws BusinessException {
         log.info("-----------------------------------------------------------------------");
-        log.debug("PARAM: username "+ username);
+        log.info("PARAM: username "+ username);
         log.debug("PARAM: password "+ password);
 
         String accessToken = null;
@@ -89,8 +89,10 @@ public class YibanUtils {
 
         // 成功
         if (code.equals("100")) {
-            accessToken = root.getAsJsonObject("data").getAsJsonObject("user")
-                    .getAsJsonPrimitive("access_token").getAsString();
+            JsonObject userObject = root.getAsJsonObject("data").getAsJsonObject("user");
+            accessToken = userObject.getAsJsonPrimitive("access_token").getAsString();
+            String nick = userObject.getAsJsonPrimitive("nick").getAsString();
+            log.info("nick: "+nick);
         }else {
             String errMsg = root.getAsJsonPrimitive("message").getAsString();
             throw new BusinessException(EmBusinessError.USER_LOGIN_FAIL,errMsg);
