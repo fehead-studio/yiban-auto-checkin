@@ -81,7 +81,7 @@ public class UserController {
     }
 
     @GetMapping("/checkin/{type}")
-    public CommonResult checkin(@PathVariable int type){
+    public CommonResult checkin(@PathVariable int type) throws InterruptedException{
         log.info("PARAM: type " + type);
         if (type == 1){
             runCheckin.morCheck();

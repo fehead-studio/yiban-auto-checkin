@@ -34,4 +34,4 @@ public class EnPasswd {
             userMapper.updateByPrimaryKey(user);
         }
     }
-}
+ }

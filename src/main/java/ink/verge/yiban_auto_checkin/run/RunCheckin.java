@@ -25,18 +25,14 @@ public class RunCheckin {
     /**
      * 晨间签到
      */
-    @Scheduled(cron = "0 0 6 * * *")
-    public void morCheck(){
+    @Scheduled(cron = "0 0 6-8 * * *")
+    public void morCheck() throws InterruptedException {
         log.info("开始执行晨间签到");
 
         List<User> morUndoneUser = userService.getMorUndoneUser();
         for (User user : morUndoneUser) {
             if (yibanUtils.checkin(user,1)) userService.setCheckinStatus(user,1);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Thread.sleep(1000);
         }
 
     }
@@ -44,18 +40,16 @@ public class RunCheckin {
     /**
      * 午间签到
      */
-    @Scheduled(cron = "0 0 12 * * *")
-    public void noonCheck(){
+    @Scheduled(cron = "0 0 12-14 * * *")
+    public void noonCheck() throws InterruptedException{
         log.info("开始执行午间签到");
 
         List<User> noonUndoneUserList = userService.getNoonUndoneUser();
         for (User user : noonUndoneUserList) {
             if (yibanUtils.checkin(user,2)) userService.setCheckinStatus(user,2);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Thread.sleep(1000);
         }
     }
+
+
 }
