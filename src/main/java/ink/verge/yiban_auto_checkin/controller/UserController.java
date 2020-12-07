@@ -33,15 +33,20 @@ public class UserController {
         user.setPassword(enPassword);
         user.setMail(mail);
 
-        if (userService.verifyAccount(account,password)){
-            if (userService.getUserByAccount(account) == null) userService.insertUser(user);
-            else return CommonResult.failed("用户已存在");
-            log.info("SUCCESS: 插入成功");
-            return CommonResult.success("添加成功，下次打卡自动打");
+        if(userService.getUserByAccount(account) == null){
+            if (userService.verifyAccount(account,password)){
+                userService.insertUser(user);
+                log.info("SUCCESS: 插入成功");
+                return CommonResult.success("添加成功，下次打卡自动打");
+            } else {
+                log.error("FAIL: 账号或密码错误，插入失败");
+                return CommonResult.failed("账号或密码错误，请检查");
+            }
         } else {
-            log.error("SUCCESS: 插入失败");
-            return CommonResult.failed("数据有误，请检查");
+            log.error("FAIL: 用户已存在，插入失败");
+            return CommonResult.failed("用户已存在");
         }
+
     }
 
     @PutMapping("/{uid}")
