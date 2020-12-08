@@ -67,7 +67,7 @@ public class UserController {
             return CommonResult.failed();
         }
     }
-    @DeleteMapping("/{uid}")
+    /* @DeleteMapping("/{uid}")
     public CommonResult deleteUser(@PathVariable int uid){
         log.info("PARAM: uid " + uid );
         if (userService.deleteUser(uid) == 1){
@@ -77,13 +77,13 @@ public class UserController {
             log.info("FAILED: 删除失败");
             return CommonResult.failed();
         }
-    }
+    }*/
 
-    @GetMapping("/selectByAccount")
+    /*@GetMapping("/selectByAccount")
     public CommonResult getUser(String account){
         log.info("PARAM: account " + account);
         return CommonResult.success(null,userService.getUserByAccount(account));
-    }
+    }*/
 
     @GetMapping("/checkin/{type}")
     public CommonResult checkin(@PathVariable int type) throws InterruptedException{
