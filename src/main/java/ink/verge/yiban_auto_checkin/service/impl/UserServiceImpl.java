@@ -1,11 +1,14 @@
 package ink.verge.yiban_auto_checkin.service.impl;
 
+import com.fehead.lang.error.BusinessException;
+import com.fehead.lang.error.EmBusinessError;
 import ink.verge.yiban_auto_checkin.mbg.mapper.UserMapper;
 import ink.verge.yiban_auto_checkin.mbg.model.User;
 import ink.verge.yiban_auto_checkin.mbg.model.UserExample;
 import ink.verge.yiban_auto_checkin.service.UserService;
 import ink.verge.yiban_auto_checkin.utils.YibanUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -102,6 +105,22 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         return list.get(0);
+    }
+
+    @Override
+    public int updateOpenIdByAccount(String account, String openId) throws BusinessException {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andAccountEqualTo(account);
+        List<User> list = userMapper.selectByExample(userExample);
+        if(list.size() == 0){
+            throw new BusinessException(EmBusinessError.LOGIN_ERROR, "账户不存在");
+        }
+        User user = list.get(0);
+        if (!StringUtils.isEmpty(user.getOpenid())) {
+            throw new BusinessException(EmBusinessError.LOGIN_ERROR, "账户已绑定");
+        }
+        user.setOpenid(openId);
+        return userMapper.updateByPrimaryKeySelective(user);
     }
 
     @Override

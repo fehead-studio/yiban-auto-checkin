@@ -52,8 +52,6 @@ public class SmsUtil {
      */
     public boolean sendSms(String modelName, Map<String, String> modelParam, String phone) {
 
-        boolean result = false;
-
         String appKey = feheadProperties.getSmsProperties().getAppKey();
         String secret = feheadProperties.getSmsProperties().getSecret();
         String regionId = feheadProperties.getSmsProperties().getRegionId();
@@ -78,11 +76,11 @@ public class SmsUtil {
         try {
             CommonResponse response = client.getCommonResponse(request);
             System.out.println(response.getData());
-            result = true;
         } catch (ClientException e) {
             e.printStackTrace();
+            return false;
         }
 
-        return result;
+        return true;
     }
 }
