@@ -1,5 +1,6 @@
 package ink.verge.yiban_auto_checkin.service;
 
+import com.fehead.lang.error.BusinessException;
 import ink.verge.yiban_auto_checkin.mbg.model.User;
 
 import java.util.List;
@@ -76,8 +77,16 @@ public interface UserService {
     User getUserByOpenId(String openId);
 
     /**
-     * 校验用户名和密码是否正确
+     * 通过 account 更新用户的 openId
      * @param account
+     * @param openId
+     * @return
+     */
+    int updateOpenIdByAccount(String account, String openId) throws BusinessException;
+
+    /**
+     * 校验用户名和密码是否正确
+     * @param username
      * @param password
      * @return
      */

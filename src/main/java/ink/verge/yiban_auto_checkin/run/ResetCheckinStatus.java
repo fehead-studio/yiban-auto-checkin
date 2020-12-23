@@ -21,8 +21,6 @@ public class ResetCheckinStatus {
      */
     @Scheduled(cron = "0 0 0 * * *")
     public void resetCheckinStatusToFalse(){
-        log.info("开始重置签到状态");
-
         userService.resetCheckinStatus();
     }
 }

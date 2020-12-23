@@ -34,6 +34,7 @@ public class WxServiceImpl implements WxService {
     @Value("${fehead.wx.appsecret}")
     static String appSecret;
     private static final String ACCRESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token";
+    private static final String AUTHENTICATION_PHONE_URL = "";
     private static String accessToken;
     private static Map<String,Object> mapParam = new HashMap<>();
 
@@ -97,9 +98,15 @@ public class WxServiceImpl implements WxService {
         }
         WxUserMessageModel responseData = new WxUserMessageModel();
         packageCommonData(responseData,userMessage);
+        String replayStr = "";
         if(StringUtils.equals(userMessage.getEvent(),"CLICK")&&StringUtils.equals(userMessage.getEventkey(),"V1_YIBAN_CHAEK_STATE")){
             responseData.setMsgType("text");
-            String replayStr = checkCheckState(responseData.getToUserName());
+            replayStr = checkCheckState(responseData.getToUserName());
+            responseData.setContent(replayStr);
+        }
+        if (StringUtils.equals(userMessage.getEvent(), "CLICK") && StringUtils.equals(userMessage.getEvent(), "V1_YIBAN_CHECK_LOGIN")) {
+            responseData.setMsgType("text");
+            replayStr = authenticationTelephone(userMessage.getFromUserName());
             responseData.setContent(replayStr);
         }
         return responseData;
@@ -165,4 +172,14 @@ public class WxServiceImpl implements WxService {
 
     }
 
+    /**
+     * 根据 openID 返回绑定手机号超链接
+     *
+     * @param openID 用户 openID
+     * @return 含绑定手机号超链接的 a 标签
+     */
+    private String authenticationTelephone(String openID) {
+        String url = AUTHENTICATION_PHONE_URL + "&open_id=" + openID;
+        return "<a href=\"" + url + "\">绑定手机号</a>";
+    }
 }
