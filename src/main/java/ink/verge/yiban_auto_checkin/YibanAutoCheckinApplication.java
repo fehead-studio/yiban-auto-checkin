@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@ComponentScan("com.fehead.lang.**")
+@ComponentScan({"com.fehead.lang.**","ink.verge.yiban_auto_checkin"})
 @MapperScan("ink.verge.yiban_auto_checkin.mbg.mapper")
 public class YibanAutoCheckinApplication {
 
