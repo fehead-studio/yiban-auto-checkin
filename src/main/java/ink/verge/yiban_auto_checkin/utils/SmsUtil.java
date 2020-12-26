@@ -1,5 +1,7 @@
 package ink.verge.yiban_auto_checkin.utils;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.druid.support.json.JSONUtils;
 import com.aliyuncs.CommonRequest;
 import com.aliyuncs.CommonResponse;
@@ -8,7 +10,10 @@ import com.aliyuncs.IAcsClient;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
+import com.fehead.lang.error.BusinessException;
+import com.fehead.lang.error.EmBusinessError;
 import com.fehead.lang.properties.FeheadProperties;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -38,6 +43,7 @@ import java.util.Map;
 @Component
 public class SmsUtil {
 
+    private static final String ORDINARY_ERROR = "CLIENT_SEND_FAILED";
     @Resource
     private FeheadProperties feheadProperties;
 
@@ -48,9 +54,9 @@ public class SmsUtil {
      * @param modelName  短信模板名，传入的模板必须是在阿里大于“管理中心-短信模板管理”中的可用模板。示例：sms.TemplateNotice
      * @param modelParam 模板内容里面的变量
      * @param phone      用户手机号码
-     * @return boolean true成功false失败
+     * @return String    Code
      */
-    public boolean sendSms(String modelName, Map<String, String> modelParam, String phone) {
+    public String sendSms(String modelName, Map<String, String> modelParam, String phone) {
 
         String appKey = feheadProperties.getSmsProperties().getAppKey();
         String secret = feheadProperties.getSmsProperties().getSecret();
@@ -73,14 +79,15 @@ public class SmsUtil {
         request.putQueryParameter("TemplateCode", modelName);
         request.putQueryParameter("TemplateParam", JSONUtils.toJSONString(modelParam));
         System.out.println("modelParam: " + JSONUtils.toJSONString(modelParam));
+        JSONObject data;
         try {
             CommonResponse response = client.getCommonResponse(request);
-            System.out.println(response.getData());
+            data = JSONUtil.parseObj(response.getData());
         } catch (ClientException e) {
             e.printStackTrace();
-            return false;
+            return ORDINARY_ERROR;
         }
-
-        return true;
+        System.out.println(data);
+        return (String) data.get("Code");
     }
 }
