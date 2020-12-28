@@ -9,7 +9,6 @@ import com.fehead.lang.response.CommonReturnType;
 import com.fehead.lang.response.FeheadResponse;
 import com.fehead.lang.util.CheckEmailAndTelphoneUtil;
 import ink.verge.yiban_auto_checkin.controller.model.ValidateCodeModel;
-import ink.verge.yiban_auto_checkin.mbg.mapper.UserMapper;
 import ink.verge.yiban_auto_checkin.service.RedisService;
 import ink.verge.yiban_auto_checkin.service.SmsService;
 import ink.verge.yiban_auto_checkin.service.UserService;
@@ -60,10 +59,10 @@ public class SmsController extends BaseController {
     /**
      * 提供手机号和当前行为，根据行为发送相应短信
      *
-     * @param request
-     * @param response
-     * @return
-     * @throws BusinessException
+     * @param request 请求
+     * @param response 响应
+     * @return FeheadResponse
+     * @throws BusinessException fehead 标准异常
      */
     @PostMapping(value = "/send")
     public FeheadResponse sendSms(HttpServletRequest request, HttpServletResponse response) throws BusinessException {
@@ -132,10 +131,10 @@ public class SmsController extends BaseController {
     /**
      * 对手机号和验证码进行校验
      *
-     * @param request
-     * @param response
-     * @return
-     * @throws BusinessException
+     * @param request 请求
+     * @param response 响应
+     * @return FeheadResponse
+     * @throws BusinessException fehead 标准异常
      */
     @PutMapping(value = "/validate")
     public FeheadResponse validateSms(HttpServletRequest request, HttpServletResponse response)
