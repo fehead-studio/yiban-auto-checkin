@@ -11,7 +11,6 @@ import ink.verge.yiban_auto_checkin.utils.SmsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +53,7 @@ public class SmsServiceImpl implements SmsService {
         Map<String, String> paramMap = new HashMap<>();
         ValidateCodeModel smsCode = CreateCodeUtil.createCode(telephone, 6);
         paramMap.put("code", smsCode.getCode());
-        String modelName = "";
+        String modelName;
         try {
             modelName = feheadProperties.getSmsProperties().getSmsModel().get(modelId).getName();
         } catch (Exception e) {
