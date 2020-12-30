@@ -136,7 +136,7 @@ public class SmsController extends BaseController {
      * @return FeheadResponse
      * @throws BusinessException fehead 标准异常
      */
-    @PutMapping(value = "/validate")
+    @PostMapping(value = "/validate")
     public FeheadResponse validateSms(HttpServletRequest request, HttpServletResponse response)
             throws BusinessException {
 
@@ -146,6 +146,7 @@ public class SmsController extends BaseController {
         String smsKey = "";
         logger.info("手机号：" + telephoneInRequest);
         logger.info("验证码：" + codeInRequest);
+//        return CommonReturnType.create("successTest");
         if (!CheckEmailAndTelphoneUtil.checkTelphone(telephoneInRequest)) {
             logger.info("手机号不合法");
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "手机号不合法");
