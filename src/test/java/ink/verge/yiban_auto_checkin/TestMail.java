@@ -1,16 +1,8 @@
 package ink.verge.yiban_auto_checkin;
 
-import cn.hutool.extra.mail.MailUtil;
-import ink.verge.yiban_auto_checkin.mbg.mapper.UserMapper;
-import ink.verge.yiban_auto_checkin.mbg.model.User;
-import ink.verge.yiban_auto_checkin.mbg.model.UserExample;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.List;
 
 /**
  * @Author Verge
@@ -20,7 +12,7 @@ import java.util.List;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class TestMail {
-    @Autowired
+    /*@Autowired
     UserMapper userMapper;
     @Test
     public void mailSend() throws Exception{
@@ -39,5 +31,5 @@ public class TestMail {
                 Thread.sleep(1000);
             }
         }
-    }
+    }*/
 }

@@ -1,6 +1,6 @@
 package ink.verge.yiban_auto_checkin;
 
-import ink.verge.yiban_auto_checkin.utils.IMEIUtils;
+import ink.verge.utils.checkin.utils.IMEIUtils;
 
 /**
  * @Author Verge

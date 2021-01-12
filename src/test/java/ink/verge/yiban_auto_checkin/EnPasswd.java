@@ -1,9 +1,9 @@
 package ink.verge.yiban_auto_checkin;
 
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
-import ink.verge.yiban_auto_checkin.mbg.mapper.UserMapper;
-import ink.verge.yiban_auto_checkin.mbg.model.User;
-import ink.verge.yiban_auto_checkin.service.UserService;
+
+import ink.verge.utils.checkin.mapper.UserMapper;
+import ink.verge.utils.checkin.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import java.util.List;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class EnPasswd {
-    @Autowired
+    /*@Autowired
     private UserService userService;
     @Autowired
     private UserMapper userMapper;
@@ -33,5 +33,5 @@ public class EnPasswd {
             user.setPassword(aes.encryptBase64(user.getPassword()));
             userMapper.updateByPrimaryKey(user);
         }
-    }
+    }*/
  }

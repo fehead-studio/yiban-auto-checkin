@@ -1,18 +1,9 @@
 package ink.verge.yiban_auto_checkin;
 
-import cn.hutool.crypto.symmetric.SymmetricCrypto;
-import ink.verge.yiban_auto_checkin.mbg.mapper.UserMapper;
-import ink.verge.yiban_auto_checkin.mbg.model.User;
-import ink.verge.yiban_auto_checkin.mbg.model.UserExample;
-import ink.verge.yiban_auto_checkin.utils.YibanUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.List;
 
 /**
  * @Author Verge
@@ -23,7 +14,7 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @Slf4j
 public class RemoveInvalidUser {
-    @Autowired
+    /*@Autowired
     private YibanUtils yibanUtils;
     @Autowired
     private UserMapper userMapper;
@@ -39,6 +30,6 @@ public class RemoveInvalidUser {
                 log.info("已删除: "+user.getAccount());
             }
         }
-    }
+    }*/
 
 }

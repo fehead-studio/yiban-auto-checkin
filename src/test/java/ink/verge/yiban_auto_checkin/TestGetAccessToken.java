@@ -1,6 +1,6 @@
 package ink.verge.yiban_auto_checkin;
 
-import ink.verge.yiban_auto_checkin.utils.YibanUtils;
+import ink.verge.utils.checkin.utils.YibanUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
