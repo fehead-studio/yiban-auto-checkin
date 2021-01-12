@@ -36,7 +36,7 @@ public class YibanUtils {
         morMap.put("24[0][0][value]","36.5");
 
         morMap.put("24[0][1][name]","form[24][field_1588749738_1026][]");
-        morMap.put("24[0][1][value]","陕西省+西安市+未央区+111县道+111县+靠近陕西科技大学学生生活区+");
+        morMap.put("24[0][1][value]","陕西省 西安市 未央区 111县道 111县 靠近陕西科技大学学生生活区");
 
         morMap.put("24[0][2][name]","form[24][field_1588749759_6865][]");
         morMap.put("24[0][2][value]","是");
@@ -51,7 +51,7 @@ public class YibanUtils {
         noonMap.put("25[0][0][value]","36.5");
 
         noonMap.put("25[0][1][name]","form[25][field_1588750304_5363][]");
-        noonMap.put("25[0][1][value]","陕西省+西安市+未央区+111县道+111县+靠近陕西科技大学学生生活区+");
+        noonMap.put("25[0][1][value]","陕西省 西安市 未央区 111县道 111县 靠近陕西科技大学学生生活区");
 
         noonMap.put("25[0][2][name]","form[25][field_1588750323_2500][]");
         noonMap.put("25[0][2][value]","是");
