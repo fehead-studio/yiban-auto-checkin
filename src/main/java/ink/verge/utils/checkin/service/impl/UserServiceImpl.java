@@ -1,13 +1,15 @@
 package ink.verge.utils.checkin.service.impl;
 
+import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fehead.lang.error.BusinessException;
 import ink.verge.utils.checkin.entity.User;
 import ink.verge.utils.checkin.mapper.UserMapper;
 import ink.verge.utils.checkin.service.UserService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import ink.verge.utils.checkin.utils.YibanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,6 +30,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private UserMapper userMapper;
+
+    @Autowired
+    private SymmetricCrypto aes;
+
 
     @Override
     public List<User> getNoonUncheckUser() {
@@ -85,7 +91,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public boolean verifyAccount(String username, String password) {
+    public boolean verifyAccountByYiBan(String username, String password) {
         return yibanUtils.verifyAccount(username,password);
+    }
+
+    @Override
+    public boolean verifyAccount(String username, String password) {
+        User user = getUserByAccount(username);
+        if (user == null) return false;
+        return aes.decryptStr(user.getPassword()).equals(password);
     }
 }

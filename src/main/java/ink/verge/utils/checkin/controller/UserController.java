@@ -6,7 +6,7 @@ import com.fehead.lang.controller.BaseController;
 import com.fehead.lang.response.CommonReturnType;
 import com.fehead.lang.validation.Create;
 import com.fehead.lang.validation.Update;
-import ink.verge.utils.checkin.controller.model.UserInsertModel;
+import ink.verge.utils.checkin.controller.model.UserModel;
 import ink.verge.utils.checkin.entity.User;
 import ink.verge.utils.checkin.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +25,13 @@ public class UserController extends BaseController {
     private SymmetricCrypto aes;
 
     @PostMapping(path = "/insert")
-    public CommonReturnType insertUser(@RequestBody @Validated(Create.class) UserInsertModel user) {
+    public CommonReturnType insertUser(@RequestBody @Validated(Create.class) UserModel user) {
         log.info("PARAM: account " + user.getAccount());
         log.debug("PARAM: password " + user.getPassword());
         log.info("PARAM: account " + user.getMail());
 
         if(userService.getUserByAccount(user.getAccount()) == null){
-            if (userService.verifyAccount(user.getAccount(),user.getPassword())){
+            if (userService.verifyAccountByYiBan(user.getAccount(),user.getPassword())){
                 String enPassword = aes.encryptBase64(user.getPassword());
                 user.setPassword(enPassword);
                 User newUser = new User();
@@ -50,15 +50,26 @@ public class UserController extends BaseController {
     }
 
     @PutMapping("/update")
-    public CommonReturnType updateUser(@RequestBody @Validated(Update.class) User user){
-        User oldUser = userService.getUserByAccount(user.getAccount());
+    public CommonReturnType updateUser(@RequestBody @Validated(Update.class) UserModel user){
         boolean res = userService.verifyAccount(user.getAccount(),user.getPassword());
-        if (oldUser != null && res){
-            user.setUid(oldUser.getUid());
-            userService.updateById(user);
+        if (res){
+            User oldUser = userService.getUserByAccount(user.getAccount());
+            BeanUtils.copyProperties(user,oldUser,"password");
+            oldUser.setPassword(aes.encryptBase64(user.getPassword()));
+            userService.updateById(oldUser);
             return CommonReturnType.create("成功");
         } else {
             return CommonReturnType.create("账号或密码错误");
+        }
+    }
+
+    @GetMapping("/get")
+    private CommonReturnType getUser(String account,String password){
+        boolean res = userService.verifyAccount(account,password);
+        if (res){
+            return CommonReturnType.create(userService.getUserByAccount(account));
+        } else {
+            return CommonReturnType.create("账号密码不匹配，或账号不存在");
         }
     }
 }

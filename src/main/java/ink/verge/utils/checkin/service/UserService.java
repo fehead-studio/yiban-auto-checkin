@@ -60,11 +60,18 @@ public interface UserService extends IService<User> {
     int updateOpenIdByAccount(String account, String openId) throws BusinessException;
 
     /**
-     * 校验用户名和密码是否正确
+     * 通过易班校验用户名和密码是否正确
+     * @param username
+     * @param password
+     * @return
+     */
+    boolean verifyAccountByYiBan(String username,String password);
+
+    /**
+     * 校验用户名密码是否匹配
      * @param username
      * @param password
      * @return
      */
     boolean verifyAccount(String username,String password);
-
 }

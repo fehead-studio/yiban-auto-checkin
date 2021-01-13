@@ -13,37 +13,39 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import ink.verge.utils.checkin.entity.User;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 @Component
 @Slf4j
 public class YibanUtils {
 
-    @Autowired
+    @Resource
     private SymmetricCrypto aes;
 
-    private static Map<String,Object> morMap = new LinkedHashMap<>();
-    private static Map<String,Object> noonMap = new LinkedHashMap<>();
-    private static final String morUrl = "http://yiban.sust.edu.cn/v4/public/index.php/Index/formflow/add.html?desgin_id=24&list_id=12";
+    private final JsonParser parser = new JsonParser();
+
+    private static final Map<String,Object> mornMap = new LinkedHashMap<>();
+    private static final Map<String,Object> noonMap = new LinkedHashMap<>();
+    private static final String mornUrl = "http://yiban.sust.edu.cn/v4/public/index.php/Index/formflow/add.html?desgin_id=24&list_id=12";
     private static final String noonUrl = "http://yiban.sust.edu.cn/v4/public/index.php/Index/formflow/add.html?desgin_id=25&list_id=12";
     static {
-        morMap.put("24[0][0][name]","form[24][field_1588749561_2922][]");
-        morMap.put("24[0][0][value]","36.5");
+        mornMap.put("24[0][0][name]","form[24][field_1588749561_2922][]");
+        mornMap.put("24[0][0][value]","36.5");
 
-        morMap.put("24[0][1][name]","form[24][field_1588749738_1026][]");
-        morMap.put("24[0][1][value]","陕西省 西安市 未央区 111县道 111县 靠近陕西科技大学学生生活区");
+        mornMap.put("24[0][1][name]","form[24][field_1588749738_1026][]");
+        mornMap.put("24[0][1][value]","陕西省 西安市 未央区 111县道 111县 靠近陕西科技大学学生生活区");
 
-        morMap.put("24[0][2][name]","form[24][field_1588749759_6865][]");
-        morMap.put("24[0][2][value]","是");
+        mornMap.put("24[0][2][name]","form[24][field_1588749759_6865][]");
+        mornMap.put("24[0][2][value]","是");
 
-        morMap.put("24[0][3][name]","form[24][field_1588749842_2715][]");
-        morMap.put("24[0][3][value]","否");
+        mornMap.put("24[0][3][name]","form[24][field_1588749842_2715][]");
+        mornMap.put("24[0][3][value]","否");
 
-        morMap.put("24[0][4][name]","form[24][field_1588749886_2103][]");
-        morMap.put("24[0][4][value]","");
+        mornMap.put("24[0][4][name]","form[24][field_1588749886_2103][]");
+        mornMap.put("24[0][4][value]","");
 
         noonMap.put("25[0][0][name]","form[25][field_1588750276_2934][]");
         noonMap.put("25[0][0][value]","36.5");
@@ -62,13 +64,10 @@ public class YibanUtils {
     }
 
 
-
     public String getAccessToken(String username, String password) throws BusinessException {
         log.info("-----------------------------------------------------------------------");
         log.info("PARAM: username "+ username);
         log.debug("PARAM: password "+ password);
-
-        String accessToken = null;
 
         String dePassword = aes.decryptStr(password);
 
@@ -77,64 +76,65 @@ public class YibanUtils {
         map.put("password",dePassword);
         map.put("imei",IMEIUtils.getIMEI());
 
-
         String jsonStr = HttpUtil.get("https://mobile.yiban.cn/api/v3/passport/login",map);
 
-        JsonParser parser = new JsonParser();
         JsonElement element = parser.parse(jsonStr);
         JsonObject root = element.getAsJsonObject();
         String code = root.getAsJsonPrimitive("response").getAsString();
 
-        // 成功
         if (code.equals("100")) {
             JsonObject userObject = root.getAsJsonObject("data").getAsJsonObject("user");
-            accessToken = userObject.getAsJsonPrimitive("access_token").getAsString();
             String nick = userObject.getAsJsonPrimitive("nick").getAsString();
             log.info("nick: "+nick);
+
+            return userObject.getAsJsonPrimitive("access_token").getAsString();
         }else {
             String errMsg = root.getAsJsonPrimitive("message").getAsString();
             throw new BusinessException(EmBusinessError.USER_LOGIN_FAIL,errMsg);
         }
 
-        return accessToken;
     }
 
-    public String getCookie(String accesstoken){
+    public String getCookie(String accesstoken) throws BusinessException{
         log.debug("PARAM: access_token " + accesstoken);
 
-        try {
-            if (accesstoken == null) throw new Exception();
-            HttpResponse response = HttpRequest
-                    .get("http://f.yiban.cn/iapp/index?act=iapp610661&access_token="+accesstoken)
-                    .setFollowRedirects(true)
-                    .execute();
-            String res = response.header("Set-Cookie");
-            log.debug("SUCCESS: Cookie " + res);
-            return res;
-        } catch (Exception e) {
-            log.info("Exception: 未获取到SESSID");
-            e.printStackTrace();
-            return null;
-        }
+        if (accesstoken == null) throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);
+
+        HttpResponse response = HttpRequest
+                .get("http://f.yiban.cn/iapp/index?act=iapp610661&access_token="+accesstoken)
+                .setFollowRedirects(true)
+                .execute();
+        String res = response.header("Set-Cookie");
+        log.debug("SUCCESS: Cookie " + res);
+        return res;
     }
 
-    public CommonReturnType submit(String cookie, int type){
+    public CommonReturnType submit(String cookie,User user,int checkinType){
         log.debug("PARAM: cookie " + cookie);
-        log.info("PARAM: type " + type);
+        log.info("PARAM: type " + checkinType);
 
-        double temp = (new Random().nextInt(4)+4)/10.0+36;
+        double temperature = (new Random().nextInt(4)+4)/10.0+36;
         Map<String,Object> map;
         String url;
 
-        if (type == 1){
-            map = morMap;
-            map.replace("24[0][0][value]",temp);
-            url = morUrl;
+        if (checkinType == 1){
+            map = mornMap;
+            url = mornUrl;
+            map.replace("24[0][0][value]",temperature);
+            if (!user.getIsUseDefaultAddress()){
+                map.replace("24[0][1][value]",user.getAddress());
+                map.replace("24[0][2][value]","否");
+            }
         } else {
             map = noonMap;
-            map.replace("25[0][0][value]",temp);
             url = noonUrl;
+            map.replace("25[0][0][value]",temperature);
+            if (!user.getIsUseDefaultAddress()){
+                map.replace("25[0][1][value]",user.getAddress());
+                map.replace("25[0][2][value]","否");
+            }
         }
+
 
 
         try {
@@ -146,7 +146,6 @@ public class YibanUtils {
                     .cookie(cookie)
                     .execute();
 
-            JsonParser parser =  new JsonParser();
             JsonElement element = parser.parse(response.body());
             JsonObject root = element.getAsJsonObject();
             String code = root.getAsJsonPrimitive("code").getAsString();
@@ -160,46 +159,42 @@ public class YibanUtils {
             return CommonReturnType.create(msg);
         } catch (Exception e){
             e.printStackTrace();
-            return CommonReturnType.create("提交信息是发生异常");
+            return CommonReturnType.create("提交信息时发生异常");
         }
-
     }
 
 
     public boolean checkin(User user, int type) {
-        log.debug("PARAM: user " + user);
+        log.info("PARAM: user " + user);
         log.info("PARAM: type " + type);
 
         boolean flag = false;
-        String message = "\n日期: "+ new Date();
+        StringBuilder message = new StringBuilder();
+        message.append("日期: ").append(new Date());
         try {
             String accessToken = getAccessToken(user.getAccount(),user.getPassword());
-            if (accessToken == null) throw new Exception();
-
             String cookie = getCookie(accessToken);
-            if (cookie == null) throw new Exception();
 
-            CommonReturnType info = submit(cookie,type);
-            message += "\n易班返回消息:"+info.toString();
+            CommonReturnType info = submit(cookie,user,type);
+
+            message.append("\n易班返回消息: ").append(info.toString());
 
             flag = info.getStatus().equals("success");
-            return flag;
         }catch (Exception e){
-            e.printStackTrace();
+            message.append("失败信息: ").append(e.getMessage());
             log.error("签到失败");
-            return false;
         }finally {
-            String mail = user.getMail();
-            if (mail != null) {
+            if (user.getIsEnableEmailAlert() && user.getMail()!=null){
                 try {
-                    if (flag) MailUtil.send(mail,"今日打卡成功", message,false);
-                    else MailUtil.send(mail,"！！！今日打卡失败！！！", message,false);
+                    String email = user.getMail();
+                    if (flag) MailUtil.send(email,"今日打卡成功", message.toString(),false);
+                    else MailUtil.send(email,"！！！今日打卡失败！！！", message.toString(),false);
                 } catch (Exception e){
                     log.info("邮件发送失败");
                 }
             }
-
         }
+        return flag;
     }
 
     public boolean verifyAccount(String username, String password){
@@ -214,12 +209,10 @@ public class YibanUtils {
 
         String jsonStr = HttpUtil.get("https://mobile.yiban.cn/api/v3/passport/login",map);
 
-        JsonParser parser = new JsonParser();
         JsonElement element = parser.parse(jsonStr);
         JsonObject root = element.getAsJsonObject();
         String code = root.getAsJsonPrimitive("response").getAsString();
 
-        // 成功
         return code.equals("100");
     }
 }
