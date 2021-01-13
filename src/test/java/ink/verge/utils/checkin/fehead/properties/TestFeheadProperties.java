@@ -1,4 +1,4 @@
-package ink.verge.yiban_auto_checkin.fehead.properties;
+package ink.verge.utils.checkin.fehead.properties;
 
 import com.fehead.lang.properties.FeheadProperties;
 import org.junit.Test;

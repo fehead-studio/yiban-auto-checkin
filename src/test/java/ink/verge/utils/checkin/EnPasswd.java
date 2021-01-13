@@ -1,4 +1,4 @@
-package ink.verge.yiban_auto_checkin;
+package ink.verge.utils.checkin;
 
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
 

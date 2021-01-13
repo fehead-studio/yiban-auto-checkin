@@ -1,4 +1,4 @@
-package ink.verge.yiban_auto_checkin.wx;
+package ink.verge.utils.checkin.wx;
 
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
