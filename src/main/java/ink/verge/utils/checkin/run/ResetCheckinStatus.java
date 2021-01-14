@@ -20,7 +20,7 @@ public class ResetCheckinStatus {
     /**
      * 重置签到状态为false
      */
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 5 * * *")
     public void resetCheckinStatusToFalse(){
         log.info("开始重置签到状态");
         List<User> userList = userService.list();

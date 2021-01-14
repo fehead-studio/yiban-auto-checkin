@@ -35,6 +35,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private SymmetricCrypto aes;
 
 
+    /**
+     * 获取未午检且开启午检签到的用户
+     * @return
+     */
     @Override
     public List<User> getNoonUncheckUser() {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
@@ -43,6 +47,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.selectList(wrapper);
     }
 
+    /**
+     * 获取未晨检且开启晨检签到的用户
+     * @return
+     */
     @Override
     public List<User> getMornUncheckUser() {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
@@ -51,6 +59,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.selectList(wrapper);
     }
 
+    /**
+     * 设置签到状态
+     * @param id 用户id
+     * @param status 签到状态
+     * @param type 签到类型
+     * @return
+     */
     @Override
     public int setCheckinStatus(int id,boolean status, int type) {
         User user = new User();
@@ -66,6 +81,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.updateById(user);
     }
 
+    /**
+     * 通过账号获取用户信息
+     * @param account
+     * @return
+     */
     @Override
     public User getUserByAccount(String account) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
@@ -73,6 +93,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.selectOne(wrapper);
     }
 
+    /**
+     * 通过OpenId获取用户
+     * @param openId
+     * @return
+     */
     @Override
     public User getUserByOpenId(String openId) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
@@ -80,6 +105,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.selectOne(wrapper);
     }
 
+    /**
+     * 通过账号更新OpenID
+     * @param account
+     * @param openId
+     * @return
+     * @throws BusinessException
+     */
     @Override
     public int updateOpenIdByAccount(String account, String openId) throws BusinessException {
         User user = new User();
@@ -90,11 +122,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.update(user,wrapper);
     }
 
+    /**
+     * 通过易班验证账号密码是否匹配
+     * @param username
+     * @param password
+     * @return
+     */
     @Override
     public boolean verifyAccountByYiBan(String username, String password) {
         return yibanUtils.verifyAccount(username,password);
     }
 
+    /**
+     * 通过本地数据库信息验证账号密码是否匹配
+     * @param username
+     * @param password
+     * @return
+     */
     @Override
     public boolean verifyAccount(String username, String password) {
         User user = getUserByAccount(username);
