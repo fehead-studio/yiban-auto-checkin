@@ -30,7 +30,7 @@ public class RunCheckin {
     /**
      * 晨间签到
      */
-    @Scheduled(cron = "0 0 6-8 * * *")
+    //@Scheduled(cron = "0 0 6-8 * * *")
     public void morCheck() throws InterruptedException {
         log.info("开始执行晨间签到");
 
@@ -45,7 +45,7 @@ public class RunCheckin {
     /**
      * 午间签到
      */
-    @Scheduled(cron = "0 0 12-14 * * *")
+    //@Scheduled(cron = "0 0 12-14 * * *")
     public void noonCheck() throws InterruptedException{
         log.info("开始执行午间签到");
 
@@ -53,6 +53,17 @@ public class RunCheckin {
         for (User user : noonUndoneUserList) {
             if (yibanUtils.checkin(user,2)) userService.setCheckinStatus(user.getUid(),true,2);
             Thread.sleep(1000);
+        }
+    }
+
+    /**
+     * 假期签到
+     */
+    @Scheduled(cron = "0 0 8-14 * * *")
+    public void holidayCheckin(){
+        List<User> list = userService.getMornUncheckUser();
+        for (User user : list) {
+            if (yibanUtils.checkin(user)) userService.setCheckinStatus(user.getUid(),true,1);
         }
     }
 
