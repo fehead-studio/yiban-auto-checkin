@@ -11,7 +11,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableScheduling
 @ComponentScan({"com.fehead.lang.**","ink.verge.utils.checkin"})
 @MapperScan("ink.verge.utils.checkin.mapper")
-@EnableSwagger2
 public class YibanAutoCheckinApplication {
 
     public static void main(String[] args) {

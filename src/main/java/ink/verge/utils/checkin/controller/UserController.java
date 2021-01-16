@@ -9,6 +9,8 @@ import com.fehead.lang.validation.Update;
 import ink.verge.utils.checkin.controller.model.UserModel;
 import ink.verge.utils.checkin.entity.User;
 import ink.verge.utils.checkin.service.impl.UserServiceImpl;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +20,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Slf4j
 @RequestMapping("/user")
+@Api
 public class UserController extends BaseController {
     @Autowired
     private UserServiceImpl userService;
     @Autowired
     private SymmetricCrypto aes;
 
+    @ApiOperation("新增用户")
     @PostMapping(path = "/insert")
     public CommonReturnType insertUser(@RequestBody @Validated(Create.class) UserModel user) {
         log.info("PARAM: account " + user.getAccount());
@@ -49,6 +53,7 @@ public class UserController extends BaseController {
         }
     }
 
+    @ApiOperation("修改用户信息")
     @PutMapping("/update")
     public CommonReturnType updateUser(@RequestBody @Validated(Update.class) UserModel user){
         boolean res = userService.verifyAccount(user.getAccount(),user.getPassword());
@@ -63,6 +68,7 @@ public class UserController extends BaseController {
         }
     }
 
+    @ApiOperation("查询用户信息")
     @GetMapping("/get")
     private CommonReturnType getUser(String account,String password){
         boolean res = userService.verifyAccount(account,password);

@@ -95,7 +95,7 @@ public class YibanUtils {
      * @throws BusinessException 登陆失败抛出异常
      */
     public String getAccessToken(String username, String password) throws BusinessException {
-        log.info("-----------------------------------------------------------------------");
+        log.info("开始获取accessToken");
         log.info("PARAM: username "+ username);
         log.debug("PARAM: password "+ password);
 
@@ -132,6 +132,7 @@ public class YibanUtils {
      * @throws BusinessException
      */
     public String getCookie(String accessToken) throws BusinessException{
+        log.info("开始获取cookie");
         log.debug("PARAM: access_token " + accessToken);
 
         if (accessToken == null) throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);
@@ -153,6 +154,7 @@ public class YibanUtils {
      * @return
      */
     public CommonReturnType submit(String cookie,String url,Map<String,Object> data){
+        log.info("开始提交表单");
         try {
             if (cookie == null) throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"cookie不能为空");
 
@@ -187,6 +189,7 @@ public class YibanUtils {
      * @return
      */
     public boolean checkin(User user){
+        log.info(user.getAccount()+"开始签到");
         boolean flag = false;
         StringBuilder message = new StringBuilder();
         message.append("日期: ").append(new Date());
@@ -206,9 +209,11 @@ public class YibanUtils {
             message.append("\n易班返回消息: ").append(info.toString());
 
             flag = info.getStatus().equals("success");
+            if (flag) log.info("签到成功");
+            else log.info("签到失败");
         } catch (Exception e){
             message.append("\n失败信息: ").append(e.getMessage());
-            log.error("签到失败");
+            log.error("签到失败:" + e.getMessage());
         } finally {
             if (user.getIsEnableEmailAlert() && user.getMail()!=null && !user.getMail().equals("")){
                 try {
