@@ -73,7 +73,7 @@ public class YibanUtils {
         holidayMap.put("13[0][2][name]","form[13][field_1587635252_7450][]");
         holidayMap.put("13[0][2][value]","获取位置时出现问题");
 
-        holidayMap.put("13[0][3][name","form[13][field_1587635509_7740][]");
+        holidayMap.put("13[0][3][name]","form[13][field_1587635509_7740][]");
         holidayMap.put("13[0][3][value]","否");
 
         holidayMap.put("13[0][4][name]","form[13][field_1587998920_6988][]");
