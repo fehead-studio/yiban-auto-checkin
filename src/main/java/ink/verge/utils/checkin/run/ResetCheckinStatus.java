@@ -30,5 +30,6 @@ public class ResetCheckinStatus {
         log.info("开始重置完成");
         // 重置明日打卡分钟数
         RunCheckin.dayMinute = new Random().nextInt(58)+1;
+        log.info("明日打卡分钟为："+RunCheckin.dayMinute);
     }
 }

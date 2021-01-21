@@ -1,6 +1,8 @@
 package ink.verge.utils.checkin.run;
 
+import ink.verge.utils.checkin.entity.DayCheckinState;
 import ink.verge.utils.checkin.entity.User;
+import ink.verge.utils.checkin.service.impl.DayCheckinStateServiceImpl;
 import ink.verge.utils.checkin.service.impl.UserServiceImpl;
 
 import ink.verge.utils.checkin.utils.YibanUtils;
@@ -16,20 +18,25 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Component
 @Slf4j
 public class RunCheckin {
     private final UserServiceImpl userService;
     private final YibanUtils yibanUtils;
+    private final DayCheckinStateServiceImpl dayCheckinStateService;
 
     // 每日的打卡分钟 {1-59}
     public static int dayMinute;
 
     @Autowired
-    public RunCheckin(UserServiceImpl userService, YibanUtils yibanUtils) {
+    public RunCheckin(UserServiceImpl userService, YibanUtils yibanUtils,DayCheckinStateServiceImpl dayCheckinStateService) {
         this.userService = userService;
         this.yibanUtils = yibanUtils;
+        this.dayCheckinStateService = dayCheckinStateService;
+        dayMinute = new Random().nextInt(58)+1;
+        log.info("下次打卡分钟为："+ dayMinute);
     }
 
     /**
@@ -83,7 +90,20 @@ public class RunCheckin {
             // 进行打卡
             List<User> list = userService.getMornUncheckUser();
             for (User user : list) {
-                if (yibanUtils.checkin(user)) userService.setCheckinStatus(user.getUid(),true,1);
+                DayCheckinState dayCheckinState = new DayCheckinState();
+                dayCheckinState.setUserId(user.getUid());
+                dayCheckinState.setCheckTime(new Date());
+                if (yibanUtils.checkin(user)) {
+                    userService.setCheckinStatus(user.getUid(),true,1);
+                    // 记录打卡情况
+                    log.info(user.getAccount()+":打卡成功");
+                    dayCheckinState.setCheckState("成功");
+                    dayCheckinStateService.save(dayCheckinState);
+                }else {
+                    log.info(user.getAccount()+":打卡失败");
+                    dayCheckinState.setCheckState("失败");
+                    dayCheckinStateService.save(dayCheckinState);
+                }
             }
         }
     }
