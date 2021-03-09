@@ -42,7 +42,7 @@ public class RunCheckin {
     /**
      * 晨间签到
      */
-    @Scheduled(cron = "5 0 6-8 * * *")
+    @Scheduled(cron = "5 * 6-8 * * *")
     public void morCheck() {
         if (Calendar.getInstance().get(Calendar.MINUTE)==dayMinute){
             log.info("开始执行晨间签到");
@@ -69,7 +69,7 @@ public class RunCheckin {
     /**
      * 午间签到
      */
-    @Scheduled(cron = "5 0 12-14 * * *")
+    @Scheduled(cron = "5 * 12-14 * * *")
     public void noonCheck() {
         if (Calendar.getInstance().get(Calendar.MINUTE)==dayMinute){
             log.info("开始执行午间签到");
