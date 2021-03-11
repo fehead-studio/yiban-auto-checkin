@@ -80,7 +80,7 @@ public class RunCheckin {
                 dayCheckinState.setUserId(user.getUid());
                 dayCheckinState.setCheckTime(new Date());
                 if (yibanUtils.checkin(user,2)) {
-                    userService.setCheckinStatus(user.getUid(),true,1);
+                    userService.setCheckinStatus(user.getUid(),true,2);
                     // 记录打卡情况
                     log.info(user.getAccount()+":打卡成功");
                     dayCheckinState.setCheckState("成功");
