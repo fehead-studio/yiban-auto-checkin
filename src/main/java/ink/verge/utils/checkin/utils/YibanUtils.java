@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.net.HttpCookie;
 import java.util.*;
 
 @Component
@@ -138,11 +139,17 @@ public class YibanUtils {
         if (accessToken == null) throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);
 
         HttpResponse response = HttpRequest
-                .get("http://f.yiban.cn/iapp/index?act=iapp610661&access_token="+accessToken)
-                .setFollowRedirects(true)
+                .get("https://f.yiban.cn/iapp/index?act=iapp610661")
+                .setMaxRedirectCount(2)
+                .header("authorization","Bearer "+accessToken)
+                .header("logintoken",accessToken)
+                .header("version","4.9.7")
+                .header("signature","YWT941Ecdwy6t1GQFo3JxzXwkdxoirKjCUTjq2zD3aoS3iA0fJ9liz6dU74ce/VFGinP/V3VNS7PvtlDBnrJzw")
+                .cookie("loginToken=" + accessToken)
                 .execute();
-        String res = response.header("Set-Cookie");
-        log.debug("SUCCESS: Cookie " + res);
+
+        String res = response.header("Set-cookie");
+        log.debug("SUCCESS: Cookie " + response);
         return res;
     }
 
@@ -267,7 +274,7 @@ public class YibanUtils {
             flag = info.getStatus().equals("success");
         } catch (Exception e){
             message.append("\n失败信息: ").append(e.getMessage());
-            log.error("签到失败");
+            log.error("签到失败:"+e);
         } finally {
             if (user.getIsEnableEmailAlert() && user.getMail()!=null && !user.getMail().equals("")){
                 try {
