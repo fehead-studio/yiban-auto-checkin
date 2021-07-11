@@ -4,16 +4,11 @@ import ink.verge.utils.checkin.entity.DayCheckinState;
 import ink.verge.utils.checkin.entity.User;
 import ink.verge.utils.checkin.service.impl.DayCheckinStateServiceImpl;
 import ink.verge.utils.checkin.service.impl.UserServiceImpl;
-
 import ink.verge.utils.checkin.utils.YibanUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Calendar;
 import java.util.Date;

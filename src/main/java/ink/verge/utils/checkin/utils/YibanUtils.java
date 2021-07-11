@@ -13,17 +13,17 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import ink.verge.utils.checkin.entity.User;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
-import java.net.HttpCookie;
 import java.util.*;
 
 @Component
 @Slf4j
 public class YibanUtils {
 
-    @Resource
+    @Autowired
     private SymmetricCrypto aes;
 
     private final JsonParser parser = new JsonParser();
@@ -140,7 +140,7 @@ public class YibanUtils {
 
         HttpResponse response = HttpRequest
                 .get("https://f.yiban.cn/iapp/index?act=iapp610661")
-                .setMaxRedirectCount(2)
+                .setFollowRedirects(true)
                 .header("authorization","Bearer "+accessToken)
                 .header("logintoken",accessToken)
                 .header("version","4.9.7")
@@ -190,51 +190,6 @@ public class YibanUtils {
         }
     }
 
-    /**
-     * 假期签到
-     * @param user
-     * @return
-     */
-    public boolean checkin(User user){
-        log.info(user.getAccount()+"开始签到");
-        boolean flag = false;
-        StringBuilder message = new StringBuilder();
-        message.append("日期: ").append(new Date());
-        try {
-            String accessToken = getAccessToken(user.getAccount(),user.getPassword());
-            if (accessToken == null) throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"accessToken不能为null");
-            String cookie = getCookie(accessToken);
-            if (cookie == null) throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"cookie不能为null");
-            if (user.getAddress() == null || user.getAddress().equals("")) throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"地址不能为null");
-
-            Map<String,Object> map = holidayMap;
-            map.replace("13[0][2][value]",user.getAddress());
-            map.replace("13[0][0][value]",(new Random().nextInt(4)+4)/10.0+36);
-
-            CommonReturnType info = submit(cookie,holidayUrl,map);
-
-            message.append("\n易班返回消息: ").append(info.toString());
-
-            flag = info.getStatus().equals("success");
-            if (flag) log.info("签到成功");
-            else log.info("签到失败");
-        } catch (Exception e){
-            message.append("\n失败信息: ").append(e.getMessage());
-            log.error("签到失败:" + e.getMessage());
-        } finally {
-            if (user.getIsEnableEmailAlert() && user.getMail()!=null && !user.getMail().equals("")){
-                try {
-                    String email = user.getMail();
-                    if (flag) MailUtil.send(email,"今日打卡成功", message.toString(),false);
-                    else MailUtil.send(email,"！！！今日打卡失败！！！", message.toString(),false);
-                } catch (Exception e){
-                    log.info("邮件发送失败");
-                }
-            }
-        }
-        return flag;
-    }
-
     public boolean checkin(User user, int checkinType) {
 
         boolean flag = false;
@@ -242,9 +197,14 @@ public class YibanUtils {
         message.append("日期: ").append(new Date());
         try {
             String accessToken = getAccessToken(user.getAccount(),user.getPassword());
-            if (accessToken == null) throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"accessToken不能为null");
+            if (accessToken == null) {
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"accessToken不能为null");
+            }
+
             String cookie = getCookie(accessToken);
-            if (cookie == null) throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"cookie不能为null");
+            if (cookie == null) {
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"cookie不能为null");
+            }
 
             Map<String,Object> map;
             String url;
@@ -256,6 +216,9 @@ public class YibanUtils {
                 if (!user.getIsUseDefaultAddress()){
                     map.replace("24[0][1][value]",user.getAddress());
                     map.replace("24[0][2][value]","否");
+                } else {
+                    map.replace("24[0][1][value]","陕西省 西安市 未央区 111县道 111县 靠近陕西科技大学学生生活区");
+                    map.replace("24[0][2][value]","是");
                 }
             } else {
                 map = noonMap;
@@ -264,6 +227,9 @@ public class YibanUtils {
                 if (!user.getIsUseDefaultAddress()){
                     map.replace("25[0][1][value]",user.getAddress());
                     map.replace("25[0][2][value]","否");
+                } else {
+                    map.replace("25[0][1][value]","陕西省 西安市 未央区 111县道 111县 靠近陕西科技大学学生生活区");
+                    map.replace("25[0][2][value]","是");
                 }
             }
 
@@ -273,6 +239,9 @@ public class YibanUtils {
 
             flag = info.getStatus().equals("success");
         } catch (Exception e){
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            System.out.println(e);
+
             message.append("\n失败信息: ").append(e.getMessage());
             log.error("签到失败:"+e);
         } finally {
