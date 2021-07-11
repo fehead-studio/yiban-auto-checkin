@@ -11,11 +11,11 @@ import com.fehead.lang.response.CommonReturnType;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import ink.verge.utils.checkin.entity.DayCheckinState;
 import ink.verge.utils.checkin.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -190,11 +190,14 @@ public class YibanUtils {
         }
     }
 
-    public boolean checkin(User user, int checkinType) {
+    public DayCheckinState checkin(User user, int checkinType) {
+        DayCheckinState dayCheckinState = new DayCheckinState(){{
+            setUserId(user.getUid());
+            setCheckTime(new Date());
+            setCheckState("");
+        }};
 
         boolean flag = false;
-        StringBuilder message = new StringBuilder();
-        message.append("日期: ").append(new Date());
         try {
             String accessToken = getAccessToken(user.getAccount(),user.getPassword());
             if (accessToken == null) {
@@ -220,6 +223,10 @@ public class YibanUtils {
                     map.replace("24[0][1][value]","陕西省 西安市 未央区 111县道 111县 靠近陕西科技大学学生生活区");
                     map.replace("24[0][2][value]","是");
                 }
+
+                dayCheckinState.setAddress((String) map.get("24[0][1][value]"));
+                dayCheckinState.setTemperature((Double) map.get("24[0][0][value]"));
+
             } else {
                 map = noonMap;
                 url = noonUrl;
@@ -231,31 +238,31 @@ public class YibanUtils {
                     map.replace("25[0][1][value]","陕西省 西安市 未央区 111县道 111县 靠近陕西科技大学学生生活区");
                     map.replace("25[0][2][value]","是");
                 }
+
+                dayCheckinState.setAddress((String) map.get("25[0][1][value]"));
+                dayCheckinState.setTemperature((Double) map.get("25[0][0][value]"));
             }
 
             CommonReturnType info = submit(cookie,url,map);
-
-            message.append("\n易班返回消息: ").append(info.toString());
-
             flag = info.getStatus().equals("success");
-        } catch (Exception e){
-            System.out.println(Arrays.toString(e.getStackTrace()));
-            System.out.println(e);
 
-            message.append("\n失败信息: ").append(e.getMessage());
-            log.error("签到失败:"+e);
+            dayCheckinState.setStatus(flag);
+            dayCheckinState.setInfo(info.toString());
+
+        } catch (Exception e){
+            log.error("签到失败:"+Arrays.toString(e.getStackTrace()));
         } finally {
-            if (user.getIsEnableEmailAlert() && user.getMail()!=null && !user.getMail().equals("")){
+            if (user.getIsEnableEmailAlert() && user.getMail() != null && !"".equals(user.getMail())){
                 try {
                     String email = user.getMail();
-                    if (flag) MailUtil.send(email,"今日打卡成功", message.toString(),false);
-                    else MailUtil.send(email,"！！！今日打卡失败！！！", message.toString(),false);
+                    if (flag) MailUtil.send(email,"今日打卡成功", dayCheckinState.toString(),false);
+                    else MailUtil.send(email,"！！！今日打卡失败！！！", dayCheckinState.toString(),false);
                 } catch (Exception e){
                     log.info("邮件发送失败");
                 }
             }
         }
-        return flag;
+        return dayCheckinState;
     }
 
     public boolean verifyAccount(String username, String password){

@@ -7,8 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * <p>
@@ -20,6 +19,8 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
+@AllArgsConstructor
 @ApiModel(value="DayCheckinState对象", description="")
 public class DayCheckinState implements Serializable {
 
@@ -32,8 +33,15 @@ public class DayCheckinState implements Serializable {
 
     private Date checkTime;
 
-    @ApiModelProperty(value = "打卡状态：'未打卡' '成功' '失败'")
     private String checkState;
+
+    private String address;
+
+    private Double temperature;
+
+    private String info;
+
+    private Boolean status;
 
 
 }

@@ -43,17 +43,13 @@ public class RunCheckin {
             log.info("开始执行晨间签到");
             List<User> morUndoneUser = userService.getMornUncheckUser();
             for (User user : morUndoneUser) {
-                DayCheckinState dayCheckinState = new DayCheckinState();
-                dayCheckinState.setUserId(user.getUid());
-                dayCheckinState.setCheckTime(new Date());
-                if (yibanUtils.checkin(user,1)) {
+                DayCheckinState dayCheckinState = yibanUtils.checkin(user,1);
+                if (dayCheckinState.getStatus()) {
                     userService.setCheckinStatus(user.getUid(),true,1);
                     // 记录打卡情况
                     log.info(user.getAccount()+":打卡成功");
-                    dayCheckinState.setCheckState("成功");
                 }else {
                     log.info(user.getAccount()+":打卡失败");
-                    dayCheckinState.setCheckState("失败");
                 }
                 dayCheckinStateService.save(dayCheckinState);
             }
@@ -67,24 +63,20 @@ public class RunCheckin {
     @Scheduled(cron = "5 * 12-14 * * *")
     public void noonCheck() {
         if (Calendar.getInstance().get(Calendar.MINUTE)==dayMinute){
-            log.info("开始执行午间签到");
+        }
+        log.info("开始执行午间签到");
 
-            List<User> noonUndoneUserList = userService.getNoonUncheckUser();
-            for (User user : noonUndoneUserList) {
-                DayCheckinState dayCheckinState = new DayCheckinState();
-                dayCheckinState.setUserId(user.getUid());
-                dayCheckinState.setCheckTime(new Date());
-                if (yibanUtils.checkin(user,2)) {
-                    userService.setCheckinStatus(user.getUid(),true,2);
-                    // 记录打卡情况
-                    log.info(user.getAccount()+":打卡成功");
-                    dayCheckinState.setCheckState("成功");
-                }else {
-                    log.info(user.getAccount()+":打卡失败");
-                    dayCheckinState.setCheckState("失败");
-                }
-                dayCheckinStateService.save(dayCheckinState);
+        List<User> noonUndoneUserList = userService.getNoonUncheckUser();
+        for (User user : noonUndoneUserList) {
+            DayCheckinState dayCheckinState = yibanUtils.checkin(user,2);
+            if (dayCheckinState.getStatus()) {
+                userService.setCheckinStatus(user.getUid(),true,2);
+                // 记录打卡情况
+                log.info(user.getAccount()+":打卡成功");
+            }else {
+                log.info(user.getAccount()+":打卡失败");
             }
+            dayCheckinStateService.save(dayCheckinState);
         }
     }
 
