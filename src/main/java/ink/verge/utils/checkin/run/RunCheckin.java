@@ -63,20 +63,20 @@ public class RunCheckin {
     @Scheduled(cron = "5 * 12-14 * * *")
     public void noonCheck() {
         if (Calendar.getInstance().get(Calendar.MINUTE)==dayMinute){
-        }
-        log.info("开始执行午间签到");
+            log.info("开始执行午间签到");
 
-        List<User> noonUndoneUserList = userService.getNoonUncheckUser();
-        for (User user : noonUndoneUserList) {
-            DayCheckinState dayCheckinState = yibanUtils.checkin(user,2);
-            if (dayCheckinState.getStatus()) {
-                userService.setCheckinStatus(user.getUid(),true,2);
-                // 记录打卡情况
-                log.info(user.getAccount()+":打卡成功");
-            }else {
-                log.info(user.getAccount()+":打卡失败");
+            List<User> noonUndoneUserList = userService.getNoonUncheckUser();
+            for (User user : noonUndoneUserList) {
+                DayCheckinState dayCheckinState = yibanUtils.checkin(user,2);
+                if (dayCheckinState.getStatus()) {
+                    userService.setCheckinStatus(user.getUid(),true,2);
+                    // 记录打卡情况
+                    log.info(user.getAccount()+":打卡成功");
+                }else {
+                    log.info(user.getAccount()+":打卡失败");
+                }
+                dayCheckinStateService.save(dayCheckinState);
             }
-            dayCheckinStateService.save(dayCheckinState);
         }
     }
 
